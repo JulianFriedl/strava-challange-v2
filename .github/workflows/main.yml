@@ -1,26 +1,26 @@
-name: Python application deployment
+# name: Python application deployment
 
-on:
-  push:
-    branches: [ main ]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Deploy to server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        script: |
-          cd ~/challenge-bot
-          git pull
-          # Activate the virtual environment
-          source venv/bin/activate
-          # Install dependencies within the virtual environment
-          pip install -r requirements.txt
-          # Deactivate the virtual environment
-          deactivate
-          sudo systemctl restart bot_app.service
+# on:
+#   push:
+#     branches: [ main ]
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Deploy to server
+#       uses: appleboy/ssh-action@master
+#       with:
+#         host: ${{ secrets.HOST }}
+#         username: ${{ secrets.USERNAME }}
+#         key: ${{ secrets.SSH_KEY }}
+#         passphrase: ${{ secrets.SSH_PASSPHRASE }}
+#         script: |
+#           cd ~/challenge-bot
+#           git pull
+#           # Activate the virtual environment
+#           source venv/bin/activate
+#           # Install dependencies within the virtual environment
+#           pip install -r requirements.txt
+#           # Deactivate the virtual environment
+#           deactivate
+#           sudo systemctl restart bot_app.service
