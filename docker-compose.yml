@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:4.4-bionic
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    networks:
+      - strava-challange-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile.backend
+    container_name: backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - strava-challange-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: frontend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - backend
+    networks:
+      - strava-challange-network
+
+networks:
+  strava-challange-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
