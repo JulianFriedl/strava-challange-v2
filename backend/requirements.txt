@@ -3,3 +3,5 @@ flask-cors
 pymongo
 python-dotenv
 pytest
+polyline
+requests

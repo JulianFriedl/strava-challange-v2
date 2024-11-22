@@ -1,18 +1,32 @@
 from pymongo import ReturnDocument
 from pymongo.errors import PyMongoError
 from utils.db_mongo import MongoDB
-from models.activity import Activity
+from models.activity import Activity, GeoJSONLineString
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ActivityRepository:
     def __init__(self):
         self.collection = MongoDB.get_instance().activities
 
+    @staticmethod
+    def is_valid_polyline(polyline: GeoJSONLineString) -> bool:
+        """
+        Check if a GeoJSONLineString is valid.
+        A valid polyline must have at least two coordinates.
+        """
+        return polyline and polyline.type == "LineString" and len(polyline.coordinates) >= 2
     def create_activity(self, activity: Activity):
         """
         Insert a new Activity into the database.
         """
         try:
+            # Validate polyline before insertion
+            if activity.polyline and not self.is_valid_polyline(activity.polyline):
+                logger.warning(f"Invalid polyline for activity {activity.activity_id}. Setting polyline to None.")
+                activity.polyline = None
+
             activity_data = activity.to_mongo()
             self.collection.insert_one(activity_data)
         except PyMongoError as e:

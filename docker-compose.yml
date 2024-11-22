@@ -26,6 +26,8 @@ services:
       - mongo
     networks:
       - strava-challange-network
+    env_file:
+      - ./.env
 
   tests:
     build:
@@ -50,6 +52,8 @@ services:
       - backend
     networks:
       - strava-challange-network
+    env_file:
+      - ./.env
 
 networks:
   strava-challange-network:

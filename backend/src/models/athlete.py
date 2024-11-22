@@ -1,4 +1,5 @@
 from datetime import datetime
+from utils.datetime_utils import parse_datetime
 
 class Profile:
     def __init__(self, medium: str, full: str):
@@ -10,7 +11,7 @@ class Tokens:
     def __init__(self, access_token: str, refresh_token: str, expires_at):
         self.access_token = access_token
         self.refresh_token = refresh_token
-        self.expires_at = expires_at
+        self.expires_at = parse_datetime(expires_at)
 
 
 class Athlete:
@@ -28,7 +29,7 @@ class Athlete:
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
-        self.created_at = created_at
+        self.created_at = parse_datetime(created_at)
         self.profile = profile
         self.tokens = tokens
 
@@ -59,5 +60,16 @@ class Athlete:
             "created_at": self.created_at,
             "profile": self.profile,
             "tokens": self.tokens,
+        }
+
+    def to_dict(self):
+        return {
+            "athlete_id": self.athlete_id,
+            "username": self.username,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "profile": self.profile,
+            # Note: Exclude tokens if returning this data to the frontend
         }
 

@@ -10,6 +10,9 @@ from repositories.activity_repo import ActivityRepository
 from models.activity import Activity, GeoJSONLineString
 from models.athlete import Athlete
 from utils.db_mongo import MongoDB
+from scripts.seed_data import seed_athletes, seed_activities
+
+from api.auth import auth_blueprint
 
 app = flask.Flask(__name__)
 flask_cors.CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:8000", "http://127.0.0.1:8000", "http://stravascape.site"]}})
@@ -21,6 +24,9 @@ logger = logging.getLogger(__name__)
 # app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 # app.register_blueprint(user_blueprint, url_prefix='/api/user')
 
+app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
+
+
 def initialize_database():
     try:
         db_instance = MongoDB.get_instance()
@@ -30,12 +36,28 @@ def initialize_database():
         logger.error("Failed to connect to MongoDB: %s", e)
         raise
 
+def seed_database_if_empty():
+    """
+    Check if the database is empty and seed it if necessary.
+    """
+    athlete_repo = AthleteRepository()
+
+    # Check for existing data
+    if not athlete_repo.collection.estimated_document_count():
+        logger.info("Database is empty. Seeding data...")
+        seed_athletes("./data/athletes.json")  # Adjust path as needed
+        seed_activities("./data/activities.json")  # Adjust path as needed
+        logger.info("Database seeding completed.")
+    else:
+        logger.info("Database already contains data. Skipping seeding.")
 
 if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
         logger.info("Service initialization completed.")
+
+        seed_database_if_empty() # seed db for dev
 
         # Start Flask server
         app.run(host="0.0.0.0", port=8080)
