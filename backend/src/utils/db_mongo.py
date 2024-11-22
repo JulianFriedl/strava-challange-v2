@@ -20,6 +20,7 @@ class MongoDB:
             # MongoDB URI for Docker setup
             mongo_uri = f"mongodb://{username}:{password}@mongo:{port}"
             print(f"Connecting to MongoDB at {mongo_uri}")
+
             # Uncomment this line for local MongoDB testing
             # mongo_uri = f"mongodb://{username}:{password}@localhost:{port}/{db_name}"
 

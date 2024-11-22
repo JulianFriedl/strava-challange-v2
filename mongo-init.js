@@ -6,6 +6,10 @@ db.createCollection('athletes');
 db.createCollection('activities');
 db.createCollection('yearlyStats');
 
+// Create unique indexes
+db.athletes.createIndex({ "athlete_id": 1 }, { unique: true });
+db.activities.createIndex({ "activity_id": 1 }, { unique: true });
+
 // Create indexes
 db.yearlyStats.createIndex({ "athlete_id": 1, "year": 1 });
 db.activities.createIndex({ "athlete_id": 1, "type": 1 });

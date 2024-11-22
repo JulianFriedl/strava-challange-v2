@@ -6,6 +6,8 @@ from datetime import datetime
 from pymongo.errors import ConnectionFailure
 
 from repositories.athlete_repo import AthleteRepository
+from repositories.activity_repo import ActivityRepository
+from models.activity import Activity, GeoJSONLineString
 from models.athlete import Athlete
 from utils.db_mongo import MongoDB
 
@@ -20,7 +22,6 @@ logger = logging.getLogger(__name__)
 # app.register_blueprint(user_blueprint, url_prefix='/api/user')
 
 def initialize_database():
-    """Initialize MongoDB connection."""
     try:
         db_instance = MongoDB.get_instance()
         logger.info("Successfully connected to MongoDB: %s", db_instance.name)
@@ -29,43 +30,12 @@ def initialize_database():
         logger.error("Failed to connect to MongoDB: %s", e)
         raise
 
-# Initialize repository
-repo = AthleteRepository()
-
-# Test create functionality
-def test_create():
-    profile = {"medium": "http://example.com/medium.jpg", "full": "http://example.com/full.jpg"}
-    tokens = {"access_token": "token123", "refresh_token": "refresh123", "expires_at": datetime.utcnow()}
-    athlete = Athlete(
-        athlete_id=12345,
-        username="johndoe",
-        first_name="John",
-        last_name="Doe",
-        created_at=datetime.utcnow(),
-        profile=profile,
-        tokens=tokens,
-    )
-    repo.create_athlete(athlete)
-    print("Athlete created")
-
-# Test find functionality
-def test_find(athlete_id):
-    athlete = repo.find_by_athlete_id(athlete_id)
-    if athlete:
-        print("Athlete found:", athlete.__dict__)
-    else:
-        print("Athlete not found")
 
 if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
         logger.info("Service initialization completed.")
-
-        print("Starting inline tests...")
-        # Run tests
-        test_create()
-        test_find(12345)
 
         # Start Flask server
         app.run(host="0.0.0.0", port=8080)

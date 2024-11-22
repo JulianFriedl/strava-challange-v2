@@ -27,6 +27,18 @@ services:
     networks:
       - strava-challange-network
 
+  tests:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile.backend
+    command: pytest src/tests/
+    depends_on:
+      - mongo
+    networks:
+      - strava-challange-network
+    profiles: # excecutes only when "docker compose --profile test up tests"
+      - test
+
   frontend:
     build:
       context: ./frontend
@@ -45,3 +57,4 @@ networks:
 
 volumes:
   mongo_data:
+    # external: true # for prod in order to make volume more persistent

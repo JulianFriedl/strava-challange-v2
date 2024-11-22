@@ -1,4 +1,5 @@
 from pymongo import ReturnDocument
+from pymongo.errors import DuplicateKeyError, PyMongoError
 from models.athlete import Athlete
 from utils.db_mongo import MongoDB
 
@@ -10,29 +11,55 @@ class AthleteRepository:
         """
         Find an athlete by athlete_id.
         """
-        data = self.collection.find_one({"athlete_id": athlete_id})
-        return Athlete.from_mongo(data) if data else None
+        try:
+            data = self.collection.find_one({"athlete_id": athlete_id})
+            if data:
+                return Athlete.from_mongo(data)
+            return None
+        except PyMongoError as e:
+            raise Exception(f"Failed to find athlete with athlete_id {athlete_id}: {e}")
 
     def create_athlete(self, athlete: Athlete):
         """
-        Insert a new athlete into the collection.
+        Insert a new athlete into the database.
         """
-        athlete_dict = athlete.to_mongo()
-        self.collection.insert_one(athlete_dict)
+        athlete_data = athlete.to_mongo()
+        try:
+            result = self.collection.insert_one(athlete_data)
+            if result.acknowledged:
+                return result.inserted_id  # Return the inserted document's ID
+            raise Exception("Insert operation not acknowledged by the database.")
+        except DuplicateKeyError:
+            raise Exception(f"Athlete with athlete_id {athlete.athlete_id} already exists.")
+        except PyMongoError as e:
+            raise Exception(f"Failed to create athlete: {e}")
 
     def update_athlete(self, athlete_id: int, update: dict):
         """
         Update an athlete by athlete_id.
         """
-        return self.collection.find_one_and_update(
-            {"athlete_id": athlete_id},
-            {"$set": update},
-            return_document=ReturnDocument.AFTER
-        )
+        try:
+            updated_data = self.collection.find_one_and_update(
+                {"athlete_id": athlete_id},
+                {"$set": update},
+                return_document=ReturnDocument.AFTER
+            )
+            if updated_data:
+                return Athlete.from_mongo(updated_data)
+            raise Exception(f"No athlete found with athlete_id {athlete_id} to update.")
+        except PyMongoError as e:
+            raise Exception(f"Failed to update athlete with athlete_id {athlete_id}: {e}")
 
     def delete_athlete(self, athlete_id: int):
         """
         Delete an athlete by athlete_id.
         """
-        result = self.collection.delete_one({"athlete_id": athlete_id})
-        return result.deleted_count
+        try:
+            result = self.collection.delete_one({"athlete_id": athlete_id})
+            if result.deleted_count == 0:
+                raise Exception(f"No athlete found with athlete_id {athlete_id} to delete.")
+            return result.deleted_count
+        except PyMongoError as e:
+            raise Exception(f"Failed to delete athlete with athlete_id {athlete_id}: {e}")
+
+

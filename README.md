@@ -36,41 +36,30 @@ To stop all running containers:
 docker compose down
 ```
 
----
+### **Running Tests**
 
-## **Quick Docker Tips**
+This project uses Docker Compose profiles to manage testing.
 
-### **1. Rebuild Only One Service**
-If you make changes to the backend and need to rebuild it:
+To run the tests:
 ```bash
-docker compose build backend
-```
-Restart the backend service without affecting others:
-```bash
-docker compose up backend
+docker compose up tests
 ```
 
-### **2. Persistent MongoDB Data**
-- MongoDB data is stored in a Docker volume (`mongo_data`).
-- The data persists across container restarts.
+### **How It Works**
+- The `test` profile runs a separate `tests` service that executes all test cases against the application.
 
-To clear the MongoDB data:
-```bash
-docker compose down -v
-```
-
-### **3. Logs**
-View logs for a specific service (e.g., backend):
-```bash
-docker compose logs backend
-```
+### **Notes**
+- Ensure that MongoDB is running when executing tests. If MongoDB isn't running, you can start it separately using:
+  ```bash
+  docker compose up mongo
+  ```
 
 ---
 
 ## **Project Initialization**
 
 ### **Database Initialization**
-During the first run, the `mongo-init.js` script initializes the MongoDB database with users and collections.
+During the first run, the `mongo-init.js` script initializes the MongoDB database with collections and indexes.
 
 ---
 

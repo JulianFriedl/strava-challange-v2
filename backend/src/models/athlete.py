@@ -1,3 +1,4 @@
+from datetime import datetime
 
 class Profile:
     def __init__(self, medium: str, full: str):
@@ -19,7 +20,7 @@ class Athlete:
         username: str,
         first_name: str,
         last_name: str,
-        created_at,
+        created_at: datetime,
         profile: Profile,
         tokens: Tokens,
     ):
