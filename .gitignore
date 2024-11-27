@@ -1,7 +1,6 @@
-/data
 /cache
 /src/cache
-
+pyrightconfig.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -162,3 +161,57 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+# Node modules
+node_modules/
+
+# Build output
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Dependency directories
+/.pnp
+.pnp.js
+
+# IDE or editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Testing
+/coverage
+
+# React Native specific
+.expo/
+.expo-shared/
+
+# Parcel-bundler cache (if using Parcel)
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Lint/Formatting
+.eslintcache
+.stylelintcache
+
+# Lock files
+package-lock.json
+yarn.lock
+.pnpm-debug.log

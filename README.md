@@ -1,97 +1,94 @@
-# challenge-bot
+# **Strava Challenge V2**
 
-A bot for Discord, that connects to the Strava API and retrieves and evaluates activity data for a Strava challenge between friends. 
+A web application for a Strava challenge. This project includes a python backend, a React frontend, and a MongoDB database.
 
-## Requirements
+---
 
-- Python 3.8 or higher
-- A Discord bot account and token
-- A Strava application with a client ID and secret
+## **Project Setup**
 
-## Installation
+### **Components**
+1. **Backend**: A Python Flask application (`src/main.py`) providing APIs.
+2. **Frontend**: A React application served on port 5000
+3. **Database**: MongoDB running in a Docker container.
 
-### Clone or Download the Repository
+---
 
+## **Docker Setup**
+
+This project uses Docker Compose to containerize and manage services.
+
+### **Build and Start**
+To build and start the application:
 ```bash
-git clone https://github.com/yourusername/challenge-bot.git
-cd challenge-bot
+docker compose up --build
+```
+This command:
+1. Builds the Docker images for all services.
+2. Starts the containers.
+
+Access the services at:
+- Backend: [http://localhost:8080](http://localhost:8080)
+- Frontend: [http://localhost:5000](http://localhost:5000)
+
+### **Stop the Containers**
+To stop all running containers:
+```bash
+docker compose down
 ```
 
-### Set Up a Python Virtual Environment
+### **Running Tests**
 
-It's recommended to use a virtual environment for Python projects to manage dependencies separately for each project.
+This project uses Docker Compose profiles to manage testing.
 
-## Usage
-
-### 1. Create a Virtual Environment
-
-To create a new virtual environment, run the following command in your project directory:
-
+To run the tests:
 ```bash
-python3 -m venv venv
+docker compose up tests
 ```
 
-### 2. Activate the Virtual Environment
+### **How It Works**
+- The `test` profile runs a separate `tests` service that executes all test cases against the application.
 
-Activate the virtual environment before installing dependencies or running the application:
-
-- **On Linux or macOS**:
-
+### **Notes**
+- Ensure that MongoDB is running when executing tests. If MongoDB isn't running, you can start it separately using:
   ```bash
-  source venv/bin/activate
+  docker compose up mongo
   ```
 
-- **On Windows**:
+---
 
-  ```cmd
-  venv\Scripts\activate.bat
-  ```
+## **Project Initialization**
 
-### Install Required Libraries
+### **Database Initialization**
+During the first run, the `mongo-init.js` script initializes the MongoDB database with collections and indexes.
 
-With the virtual environment activated, install the project's required libraries:
+---
 
-```bash
-pip install -r requirements.txt
-```
+## **How to Start Locally Without Docker**
 
-### Configure Environment Variables
+If you prefer to run the backend and frontend locally:
+1. **Start MongoDB**:
+   ```bash
+   docker compose up mongo
+   ```
 
-Set up your environment variables by creating a `.env` file in the project's root directory. Populate it with the necessary values:
+2. **Run the Backend**:
+   ```
+   Start the backend:
+   ```bash
+   python3 src/main.py
+   ```
 
-```plaintext
-DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
-DISCORD_ADMIN_ID= YOUR_DISCORD_USER_ID
-STRAVA_CLIENT_ID=YOUR_STRAVA_CLIENT_ID
-STRAVA_CLIENT_SECRET=YOUR_STRAVA_CLIENT_SECRET
-REDIRECT_URI=http://YOUR_ADDRESS/strava_auth
-PORT=YOUR_PORT
-YEAR=The Year of the Challenge
-```
+3. **Run the Frontend**:
+   Navigate to the `frontend` directory and start the React development server:
+   ```bash
+   npm start
+   ```
 
-### Running the Application
+---
 
-To start the Discord bot and the Flask web server, navigate to the project root and run the application using the `-m` flag:
+### **Port Conflicts**
+Ensure the following ports are free on your host machine:
+- MongoDB: `27017`
+- Backend: `8080`
+- Frontend: `3000`
 
-```bash
-python3 -m src.bot.bot_app
-```
-
-Ensure you're in the root directory of your project (`challenge-bot`) when executing the above command to correctly resolve module paths.
-
-### Invite the Bot to Your Discord Server
-
-Use the following URL, replacing `YOUR_CLIENT_ID` with your Discord bot client ID, to invite the bot to your Discord server:
-
-```url
-https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=2048&scope=bot
-```
-
-### Link Your Strava Account
-
-- Send a `/strava_auth` command to the bot in a direct message. The bot will send you a link to the Strava authorization page.
-- Grant permission for the bot to access your data.
-- You'll be redirected back to the Flask web server, which will extract the authorization code and pass it back to the bot.
-- The bot will exchange the authorization code for an access token and use it to make requests to the Strava API.
-
-Now, your setup should be complete, and you can use the bot to evaluate the performance of registered users in the challenge.
