@@ -94,3 +94,13 @@ class ActivityRepository:
             return activities
         except PyMongoError as e:
             raise Exception(f"Failed to find activities for athlete_id={athlete_id} and type={activity_type}: {e}")
+
+    def get_unique_years(self):
+        """
+        Fetch all unique years with associated activities.
+        """
+        try:
+            unique_years = self.collection.distinct("year")
+            return sorted(unique_years)
+        except Exception as e:
+            raise Exception(f"Failed to fetch years: {e}")

@@ -63,3 +63,12 @@ class AthleteRepository:
             raise Exception(f"Failed to delete athlete with athlete_id {athlete_id}: {e}")
 
 
+    def get_all_athletes(self):
+        """
+        Fetch all athletes from the database.
+        """
+        try:
+            cursor = self.collection.find({})
+            return [Athlete.from_mongo(doc) for doc in cursor]
+        except Exception as e:
+            raise Exception(f"Failed to fetch athletes: {e}")

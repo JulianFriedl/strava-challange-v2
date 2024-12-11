@@ -13,6 +13,7 @@ from utils.db_mongo import MongoDB
 from scripts.seed_data import seed_athletes, seed_activities
 
 from api.auth import auth_blueprint
+from api.map import map_blueprint
 
 app = flask.Flask(__name__)
 flask_cors.CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:8000", "http://127.0.0.1:8000", "http://stravascape.site"]}})
@@ -21,11 +22,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Register blueprints
-# app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 # app.register_blueprint(user_blueprint, url_prefix='/api/user')
 
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
-
+app.register_blueprint(map_blueprint, url_prefix='/api/map')
 
 def initialize_database():
     try:
@@ -43,10 +43,10 @@ def seed_database_if_empty():
     athlete_repo = AthleteRepository()
 
     # Check for existing data
-    if not athlete_repo.collection.estimated_document_count():
-        logger.info("Database is empty. Seeding data...")
-        seed_athletes("./data/athletes.json")  # Adjust path as needed
-        seed_activities("./data/activities.json")  # Adjust path as needed
+    if not athlete_repo.get_all_athletes():
+        logger.info(f"Database is empty, Seeding data...")
+        seed_athletes("./data/athletes.json")
+        seed_activities("./data/activities.json")
         logger.info("Database seeding completed.")
     else:
         logger.info("Database already contains data. Skipping seeding.")
