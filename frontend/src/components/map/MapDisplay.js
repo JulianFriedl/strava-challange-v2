@@ -183,12 +183,3 @@ const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZo
     }
 };
 
-
-
-
-
-
-
-
-
-

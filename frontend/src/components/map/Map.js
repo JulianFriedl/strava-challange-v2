@@ -91,7 +91,7 @@ const MapContainer = styled.div`
 const SettingsButton = styled.button`
   position: absolute;
   top: 30px;
-  right: ${({ isOpen }) => isOpen ? '30px' : '20px'};
+  right: ${({ isOpen }) => isOpen ? '320px' : '20px'};
   z-index: 1200;
   background-color: ${({ isOpen }) => isOpen ? '#5b5ea6' : websitePalette.secondary};
   color: ${({ isOpen }) => isOpen ? websitePalette.accent : websitePalette.text};
