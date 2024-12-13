@@ -5,12 +5,13 @@ import websitePalette from '../../styles/palette';
 const CheckboxContainer = styled.label`
   display: flex;
   align-items: center;
-  margin-bottom: 1rem; // Using rem for consistent scaling
+  margin-bottom: 1rem;
+  margin-top: 1rem;
   cursor: pointer;
   font-size: 1rem; // Base font size for better accessibility
 
-  @media (max-width: 1000px) { 
-    font-size: 1.5rem; 
+  @media (max-width: 1000px) {
+    font-size: 1.5rem;
   }
 `;
 
@@ -37,19 +38,19 @@ const hapticCheckbox = keyframes`
 `;
 
 const StyledCheckbox = styled.span`
-  width: 1.5rem; 
+  width: 1.5rem;
   height: 1.5rem;
 
   @media (max-width: 1000px) {
-    width: 2.5rem; 
+    width: 2.5rem;
     height: 2.5rem;
   }
 
-  margin-right: 0.625rem; 
+  margin-right: 0.625rem;
   box-sizing: border-box;
   border: 2px solid #ccc;
   background-color: ${props => props.checked ? props.color : 'transparent'};
-  border-radius: 0.3125rem; 
+  border-radius: 0.3125rem;
   justify-content: center;
   align-items: center;
   transition: opacity 0.3s, background-color 0.5s, box-shadow 0.3s;
@@ -66,7 +67,7 @@ const StyledCheckbox = styled.span`
   // Hover effect
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      box-shadow: 0 0 0 3px ${props => props.color}; 
+      box-shadow: 0 0 0 3px ${props => props.color};
     }
   }
 

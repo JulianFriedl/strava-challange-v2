@@ -75,18 +75,22 @@ export default function MapDisplay({ years, selectedAthletes }) {
                 const url = new URL(api_base_address + '/map/');
                 const athleteIds = selectedAthletes.map(athlete => athlete.athlete_id);
                 const params = {
-                    years: years.join(','), // Join years into a comma-separated string
-                    athletes: athleteIds.join(','), // Join athlete IDs into a comma-separated string
+                    years: years.join(','),
+                    athletes: athleteIds.join(','),
                 };
                 url.search = new URLSearchParams(params).toString();
 
                 const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch routes data');
+                }
                 const data = await response.json();
 
-                setRoutesData(data);
+                setRoutesData(data || []); // Ensure data is always an array
                 displayRoutes(data, mapRef.current, selectedAthletes, highlightedRoutesGroupRef.current, isZoomingRef);
             } catch (error) {
                 console.error('Error fetching data:', error);
+                setRoutesData([]); // Fallback to an empty state
             }
         };
         fetchData();
@@ -109,77 +113,101 @@ export default function MapDisplay({ years, selectedAthletes }) {
     );
 };
 
+const isMobile = window.matchMedia("(max-width: 1000px)").matches;
+
 const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZoomingRef) => {
     // Clear existing highlighted layers
     highlightedRoutesGroup.clearLayers();
 
     let allBounds = [];
-    data.forEach(activity => {
-        const athleteColor =
-            selectedAthletes.find(a => a.athlete_id.toString() === activity.athlete_id.toString())?.color || 'red';
+    const batchSize = 20;
+    let index = 0;
 
-        if (activity.summary_polyline && activity.summary_polyline.coordinates.length > 1) {
-            // Use polyline's coordinates directly
-            const latLngs = activity.summary_polyline.coordinates.map(([lng, lat]) => [lat, lng]); // Flip coordinates
+    const processNextBatch = () => {
+        const batch = data.slice(index, index + batchSize);
+        batch.forEach(activity => {
+            const athleteColor =
+                selectedAthletes.find(a => a.athlete_id.toString() === activity.athlete_id.toString())?.color || 'red';
 
-            // Original route polyline
-            const routePolyline = L.polyline(latLngs, {
-                color: athleteColor,
+            if (activity.summary_polyline && activity.summary_polyline.coordinates.length > 1) {
+                const latLngs = activity.summary_polyline.coordinates.map(([lng, lat]) => [lat, lng]); // Flip coordinates
+
+                const routePolyline = L.polyline(latLngs, {
+                    color: athleteColor,
+                    opacity: 1,
+                    weight: isMobile ? 4 : 2, // Thicker line for mobile
+                }).addTo(map);
+
+                if (!isMobile) {
+                    const interactionPolyline = L.polyline(latLngs, {
+                        color: 'transparent',
+                        opacity: 0,
+                        weight: 10, // Increase weight for the interaction area
+                    }).addTo(map);
+
+                    attachEventsToPolyline(interactionPolyline, routePolyline, activity, map, highlightedRoutesGroup, isZoomingRef);
+                } else {
+                    attachEventsToPolyline(routePolyline, routePolyline, activity, map, highlightedRoutesGroup, isZoomingRef); // Use the original polyline
+                }
+
+                allBounds.push(routePolyline.getBounds());
+            }
+        });
+
+        index += batchSize;
+
+        if (index < data.length) {
+            requestAnimationFrame(processNextBatch);
+        } else {
+            if (allBounds.length > 0) {
+                const combinedBounds = allBounds.reduce((acc, bounds) => acc.extend(bounds), L.latLngBounds(allBounds[0]));
+                map.fitBounds(combinedBounds);
+            }
+        }
+    };
+
+    processNextBatch();
+};
+
+const attachEventsToPolyline = (polyline, routePolyline, activity, map, highlightedRoutesGroup, isZoomingRef) => {
+    polyline.on('mouseover', () => {
+        if (!isZoomingRef.current) {
+            const highlightedCopy = L.polyline(routePolyline.getLatLngs(), {
+                color: '#fff',
                 opacity: 1,
-                weight: 2,
-            }).addTo(map); // Add to the map directly
+                weight: 5,
+            }).addTo(highlightedRoutesGroup);
 
-            routePolyline.on(
-                'mouseover',
-                throttle(function () {
-                    if (!isZoomingRef.current) {
-                        // Highlighted copy
-                        const highlightedCopy = L.polyline(this.getLatLngs(), {
-                            color: '#fff',
-                            opacity: 1,
-                            weight: 5,
-                        }).addTo(highlightedRoutesGroup);
-                        const polylineElement = highlightedCopy._path;
-                        if (polylineElement) {
-                            polylineElement.style.pointerEvents = 'none';
-                        }
-                        this._highlightedCopy = highlightedCopy;
-                    }
-                }, 100)
-            );
-
-            routePolyline.on(
-                'mouseout',
-                throttle(function () {
-                    if (this._highlightedCopy) {
-                        highlightedRoutesGroup.removeLayer(this._highlightedCopy);
-                        delete this._highlightedCopy;
-                    }
-                }, 100)
-            );
-
-            routePolyline.on('click', function (e) {
-                const popupContent = `
-                    <strong>Activity Name:</strong> ${activity.name}<br>
-                    <strong>Athlete ID:</strong> ${activity.athlete_id}<br>
-                    <strong>Activity ID:</strong> ${activity.activity_id}<br>
-                    <a href="${activity.url}" target="_blank">View Activity</a>
-                `;
-
-                const popup = L.popup()
-                    .setLatLng(e.latlng)
-                    .setContent(popupContent)
-                    .openOn(map);
-            });
-
-            allBounds.push(routePolyline.getBounds());
+            const polylineElement = highlightedCopy._path;
+            if (polylineElement) {
+                polylineElement.style.pointerEvents = 'none';
+            }
+            routePolyline._highlightedCopy = highlightedCopy;
         }
     });
 
-    // Fit map bounds
-    if (allBounds.length > 0) {
-        const combinedBounds = allBounds.reduce((acc, bounds) => acc.extend(bounds), L.latLngBounds(allBounds[0]));
-        map.fitBounds(combinedBounds);
-    }
+    polyline.on('mouseout', () => {
+        if (routePolyline._highlightedCopy) {
+            highlightedRoutesGroup.removeLayer(routePolyline._highlightedCopy);
+            delete routePolyline._highlightedCopy;
+        }
+    });
+
+    polyline.on('click', function (e) {
+        const distance = parseFloat(activity.distance).toFixed(2);
+        const movingTime = parseFloat(activity.moving_time).toFixed(2);
+
+        const popupContent = `
+            <strong>Activity Name:</strong> ${activity.name}<br>
+            <strong>Distance:</strong> ${distance} km<br>
+            <strong>Moving-Time:</strong> ${movingTime} min<br>
+            <a href="${activity.url}" target="_blank">View Activity</a>
+        `;
+
+        const popup = L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map);
+    });
 };
 

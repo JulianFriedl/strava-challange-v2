@@ -28,8 +28,6 @@ const collapseAnimation = keyframes`
 const ExpandableContainer = styled.div`
   overflow: hidden;
   animation: ${({ isExpanded }) => (isExpanded ? expandAnimation : collapseAnimation)} 0.5s ease forwards;
-  // margin-top: 10px;
-  padding: ${({ isExpanded }) => (isExpanded ? '10px' : '0')};
   background: ${websitePalette.backgroundLight};
   border-radius: 40px;
 `;

@@ -33,7 +33,9 @@ const StyledScrollableForm = styled.form`
 `;
 
 const StyledFormGroup = styled.div`
-  margin: 1rem;
+  margin: 0 auto;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   padding: 1rem;
   border: 2px solid black;
   border-radius: 40px;
@@ -112,36 +114,42 @@ export default function SettingsPanel({ onSettingsChange, availableAthletes, ava
             <StyledScrollableForm>
                 <ExpandableComponent label="Years">
                     <StyledFormGroup>
-                        <StyledSectionHeader></StyledSectionHeader>
-                        {availableYears.map((year) => (
-                            <CustomCheckbox
-                                key={year}
-                                id={year}
-                                checked={!!selectedYears[year]}
-                                onChange={() => handleYearChange(year)}
-                                label={year.toString()}
-                                color='#5b5ea6'
-                            />
-                        ))}
+                      {availableYears.length > 0 ? (
+                                  availableYears.map((year) => (
+                                      <CustomCheckbox
+                                          key={year}
+                                          id={year}
+                                          checked={!!selectedYears[year]}
+                                          onChange={() => handleYearChange(year)}
+                                          label={year.toString()}
+                                          color='#5b5ea6'
+                                      />
+                                  ))
+                              ) : (
+                                  <p>No years available</p>
+                              )}
                     </StyledFormGroup>
                 </ExpandableComponent>
                 <ExpandableComponent label="Athletes">
                     <StyledFormGroup>
-                        <StyledSectionHeader></StyledSectionHeader>
-                        {availableAthletes.map((athlete) => {
-                            const athleteId = athlete.athlete_id.toString();
-                            const isChecked = selectedAthletes.some(a => a.id === athleteId);
-                            return (
-                                <CustomCheckbox
-                                    key={athleteId}
-                                    id={athleteId}
-                                    checked={isChecked}
-                                    onChange={() => handleAthleteChange(athlete)}
-                                    label={athlete.first_name}
-                                    color={athlete.color}
-                                />
-                            )
-                        })}
+                      {availableAthletes.length > 0 ? (
+                                  availableAthletes.map((athlete) => {
+                                      const athleteId = athlete.athlete_id.toString();
+                                      const isChecked = selectedAthletes.some(a => a.id === athleteId);
+                                      return (
+                                          <CustomCheckbox
+                                              key={athleteId}
+                                              id={athleteId}
+                                              checked={isChecked}
+                                              onChange={() => handleAthleteChange(athlete)}
+                                              label={athlete.first_name}
+                                              color={athlete.color}
+                                          />
+                                      );
+                                  })
+                              ) : (
+                                  <p>No athletes available</p>
+                              )}
                     </StyledFormGroup>
                 </ExpandableComponent>
             </StyledScrollableForm>

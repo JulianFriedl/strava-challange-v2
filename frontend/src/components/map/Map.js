@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MapDisplay from './MapDisplay';
-import SettingsPanel from './SettingsPanel'; // Assuming this is a different component
+import SettingsPanel from './SettingsPanel';
 import styled, { keyframes, css } from 'styled-components';
 import websitePalette from '../../styles/palette';
 
@@ -136,26 +136,37 @@ const Map = () => {
   useEffect(() => {
     // Fetch available athletes
     fetch(`${api_base_address}/map/athletes`)
-      .then(response => response.json())
-      .then(data => {
-        // Assign a color to each athlete from the predefined palette
-        const athletesWithColors = data.map((athlete, index) => {
-          // Assign a color from the colors array based on the index
-          const color = colors[index % colors.length];
-          return {
-            ...athlete,
-            color: color,
-          };
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch athletes');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const athletesWithColors = data.map((athlete, index) => {
+                const color = colors[index % colors.length];
+                return { ...athlete, color: color };
+            });
+            setAvailableAthletes(athletesWithColors);
+        })
+        .catch(error => {
+            console.error('Error fetching athletes:', error);
+            setAvailableAthletes([]); // Provide an empty state
         });
-        setAvailableAthletes(athletesWithColors);
-      })
-      .catch(error => console.error('Error fetching athletes:', error));
 
     // Fetch available years
     fetch(`${api_base_address}/map/years`)
-      .then(response => response.json())
-      .then(data => setAvailableYears(data))
-      .catch(error => console.error('Error fetching years:', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch years');
+            }
+            return response.json();
+        })
+        .then(data => setAvailableYears(data))
+        .catch(error => {
+            console.error('Error fetching years:', error);
+            setAvailableYears([]); // Provide an empty state
+        });
 
     const timer = setTimeout(() => setIsFirstRender(false), 1200);
     return () => clearTimeout(timer);
