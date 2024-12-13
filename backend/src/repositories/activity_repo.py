@@ -102,5 +102,22 @@ class ActivityRepository:
         try:
             unique_years = self.collection.distinct("year")
             return sorted(unique_years)
-        except Exception as e:
+        except PyMongoError as e:
             raise Exception(f"Failed to fetch years: {e}")
+
+    def list_activities_with_polylines(self, athlete_ids, years):
+        """
+        Fetch all activities with polylines for the given athlete IDs and years.
+        """
+        try:
+            query = {
+                "athlete_id": {"$in": athlete_ids},
+                "year": {"$in": years},
+                "summary_polyline": {"$exists": True, "$ne": None}
+            }
+            projection = {"_id": 0}
+            results = list(self.collection.find(query, projection))
+            return results
+        except PyMongoError as e:
+            logger.error(f"Failed to list activities with polylines: {e}")
+            return []

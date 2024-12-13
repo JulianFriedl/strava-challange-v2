@@ -12,7 +12,8 @@ db.activities.createIndex({ "activity_id": 1 }, { unique: true });
 
 // Create indexes
 db.yearlyStats.createIndex({ "athlete_id": 1, "year": 1 });
-db.activities.createIndex({ "athlete_id": 1, "type": 1 });
+db.activities.createIndex({ "athlete_id": 1, "type": 1, "year": 1 });
+db.activities.createIndex({ "athlete_id": 1, "year": 1, "polyline.coordinates": 1 });
 db.activities.createIndex({ "summary_polyline": "2dsphere" });
 
 // Note: The _id index is created automatically by MongoDB for each collection

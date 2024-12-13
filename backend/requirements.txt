@@ -5,3 +5,5 @@ python-dotenv
 pytest
 polyline
 requests
+orjson
+flask-compress

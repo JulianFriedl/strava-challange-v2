@@ -1,6 +1,7 @@
 import os
 import logging
 import flask
+from flask_compress import Compress
 import flask_cors
 from datetime import datetime
 from pymongo.errors import ConnectionFailure
@@ -17,6 +18,9 @@ from api.map import map_blueprint
 
 app = flask.Flask(__name__)
 flask_cors.CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:8000", "http://127.0.0.1:8000", "http://stravascape.site"]}})
+
+compress = Compress()
+compress.init_app(app)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -47,6 +51,7 @@ def seed_database_if_empty():
         logger.info(f"Database is empty, Seeding data...")
         seed_athletes("./data/athletes.json")
         seed_activities("./data/activities.json")
+        seed_activities("./data/activities2.json")
         logger.info("Database seeding completed.")
     else:
         logger.info("Database already contains data. Skipping seeding.")

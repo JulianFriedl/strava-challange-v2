@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, Response
 from services.map_service import get_activities_with_polylines, get_all_athletes, get_all_years
 import logging
+import orjson
 
 logger = logging.getLogger(__name__)
 map_blueprint = Blueprint('map', __name__)
@@ -11,26 +12,39 @@ def map():
     Return a list of all the activities that have a polyline and are associated
     with the athlete ID(s) and year(s).
     """
-    years = request.args.getlist('years')  # Get 'years' as a list
-    athlete_ids_raw = request.args.getlist('athletes')  # Get 'athletes' as a list
+    try:
+        # Parse and flatten the 'years' parameter
+        years_raw = request.args.getlist('years')
+        years = [
+            int(year.strip())
+            for item in years_raw
+            for year in item.split(',')
+        ]
 
-    # Flatten and parse athlete IDs
-    athlete_ids = []
-    try:
-        for item in athlete_ids_raw:
-            # Split the item by commas to handle multiple IDs in one item
-            ids = item.split(',')
-            athlete_ids.extend(int(aid.strip()) for aid in ids)
+        # Parse and flatten the 'athletes' parameter
+        athlete_ids_raw = request.args.getlist('athletes')
+        athlete_ids = [
+            int(athlete_id.strip())
+            for item in athlete_ids_raw
+            for athlete_id in item.split(',')
+        ]
+
         logger.info(f"Map request received, years: {years}, athlete_ids: {athlete_ids}")
+
+        try:
+            activities = get_activities_with_polylines(years, athlete_ids)
+
+            return Response(
+            orjson.dumps(activities, option=orjson.OPT_SERIALIZE_DATACLASS | orjson.OPT_SERIALIZE_NUMPY),
+            mimetype='application/json'
+            ), 200
+        except Exception as e:
+            logger.error(f"Error calling map service: {e}")
+            return jsonify({"error": "Failed to retrieve map data"}), 500
+
     except ValueError as e:
-        logger.error(f"Invalid athlete IDs provided: {athlete_ids_raw}")
-        return jsonify({"error": "Invalid athlete IDs"}), 400
-    try:
-        activities = get_activities_with_polylines(years, athlete_ids)
-        return jsonify(activities), 200
-    except Exception as e:
-        logger.error(f"Error fetching activities: {e}")
-        return jsonify({"error": "Failed to fetch activities"}), 500
+        logger.error(f"Invalid input provided: {e}")
+        return jsonify({"error": "Invalid athlete IDs or years"}), 400
 
 @map_blueprint.route('/athletes', methods=['GET'])
 def athletes():

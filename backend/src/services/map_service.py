@@ -12,16 +12,7 @@ def get_activities_with_polylines(years, athlete_ids):
     Fetch all activities that have a polyline and match the provided athlete IDs and years.
     """
     logger.info(f"Fetching activities for years {years} and athlete_ids {athlete_ids}.")
-    activities = []
-
-    for athlete_id in athlete_ids:
-        for year in years:
-            year_activities = activity_repo.list_activities_by_athlete_and_year(int(athlete_id), int(year))
-            polylined_activities = [
-                activity.to_mongo() for activity in year_activities if activity.polyline and activity.polyline.coordinates
-            ]
-            activities.extend(polylined_activities)
-
+    activities = activity_repo.list_activities_with_polylines(athlete_ids, years)
     return activities
 
 
