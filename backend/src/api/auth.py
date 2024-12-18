@@ -3,6 +3,7 @@ from services.auth_service import handle_strava_auth, process_strava_callback
 from api.exceptions import AuthorizationError, ScopeError, AthleteExistsError
 import logging
 
+
 logger = logging.getLogger(__name__)
 auth_blueprint = Blueprint('auth', __name__)
 
@@ -11,6 +12,7 @@ def strava_auth_url():
     """
     Generate and return the Strava OAuth URL.
     """
+    logger.info("Strava_auth_url request received.")
     try:
         auth_url = handle_strava_auth()
         return jsonify({"auth_url": auth_url}), 200
@@ -24,6 +26,7 @@ def strava_auth_callback():
     """
     Handle the Strava authorization callback.
     """
+    logger.info("Strava_auth_callback called.")
     code = request.args.get("code")
     if not code:
         return jsonify({"error": "Missing authorization code"}), 400

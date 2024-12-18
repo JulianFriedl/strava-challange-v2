@@ -113,7 +113,7 @@ class ActivityRepository:
             query = {
                 "athlete_id": {"$in": athlete_ids},
                 "year": {"$in": years},
-                "summary_polyline": {"$exists": True, "$ne": None}
+                "summary_polyline": { "$ne": None}
             }
             projection = {"_id": 0}
             results = list(self.collection.find(query, projection))

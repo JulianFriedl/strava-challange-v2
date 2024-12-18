@@ -1,9 +1,10 @@
 import os
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-from dotenv import load_dotenv
+import logging
 
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "../../../.env"))
+
+logger = logging.getLogger(__name__)
 
 class MongoDB:
     _instance = None
@@ -19,19 +20,19 @@ class MongoDB:
 
             # MongoDB URI for Docker setup
             mongo_uri = f"mongodb://{username}:{password}@mongo:{port}"
-            print(f"Connecting to MongoDB at {mongo_uri}")
+            logging.info(f"Connecting to MongoDB at {mongo_uri}")
 
             # Uncomment this line for local MongoDB testing
             # mongo_uri = f"mongodb://{username}:{password}@localhost:{port}/{db_name}"
 
             try:
-                client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)  # 5-second timeout
+                client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000, maxPoolSize=100, minPoolSize=10)
                 # Test connection
                 client.server_info()  # Will raise an exception if unable to connect
                 MongoDB._instance = client[db_name]
-                print(f"Connected to database: {MongoDB._instance.name}")
+                logging.info(f"Connected to database: {MongoDB._instance.name}")
             except ConnectionFailure as e:
-                print(f"Failed to connect to MongoDB: {e}")
-                raise # TODO:for dev, handle error correctly for prod
+                logging.error(f"Failed to connect to MongoDB: {e}")
+                raise
 
         return MongoDB._instance

@@ -5,6 +5,7 @@ import os
 from models.athlete import Athlete
 from repositories.athlete_repo import AthleteRepository
 from api.exceptions import AuthorizationError, ScopeError, AthleteExistsError
+from services.api_request_service import ApiRequestService, Task, TaskType, dummy_callback
 
 logger = logging.getLogger(__name__)
 
@@ -57,10 +58,19 @@ def process_strava_callback(code):
     activities_response = requests.get('https://www.strava.com/api/v3/athlete/activities', headers=headers)
 
     if activities_response.status_code == 200:
-        print("User granted activity access.")
+        logging.info("User granted activity access.")
     else:
         raise ScopeError(f"User did not grant the required 'activity:read' scope.")
 
+
+    task = Task(
+            endpoint="https://api.strava.com/api/v3/activities",
+            params={"before": 1234567890},
+            callback=dummy_callback,
+            task_type=TaskType.DUMMY_TASK
+        )
+    api_request_service = ApiRequestService()
+    api_request_service.submit_task(task)
 
     athlete_data = token_data["athlete"]
 
@@ -93,3 +103,6 @@ def process_strava_callback(code):
     athlete_repo.create_athlete(athlete)
     logger.info(f"New athlete {athlete.athlete_id} registered.")
     return athlete.to_dict()
+
+
+

@@ -135,7 +135,7 @@ const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZo
                 const routePolyline = L.polyline(latLngs, {
                     color: athleteColor,
                     opacity: 1,
-                    weight: isMobile ? 4 : 2, // Thicker line for mobile
+                    weight: 2,
                 }).addTo(map);
 
                 if (!isMobile) {

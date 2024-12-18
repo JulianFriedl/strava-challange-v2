@@ -5,6 +5,7 @@ from flask_compress import Compress
 import flask_cors
 from datetime import datetime
 from pymongo.errors import ConnectionFailure
+import atexit
 
 from repositories.athlete_repo import AthleteRepository
 from repositories.activity_repo import ActivityRepository
@@ -12,22 +13,23 @@ from models.activity import Activity, GeoJSONLineString
 from models.athlete import Athlete
 from utils.db_mongo import MongoDB
 from scripts.seed_data import seed_athletes, seed_activities
-
+from services.api_request_service import ApiRequestService
 from api.auth import auth_blueprint
 from api.map import map_blueprint
+from config.log_config import setup_logging
 
 app = flask.Flask(__name__)
-flask_cors.CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:8000", "http://127.0.0.1:8000", "http://stravascape.site"]}})
+flask_cors.CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:3000", "http://127.0.0.1:3000", "http://stravascape.site"]}})
 
 compress = Compress()
 compress.init_app(app)
 
-logging.basicConfig(level=logging.INFO)
+setup_logging()
 logger = logging.getLogger(__name__)
 
-# Register blueprints
-# app.register_blueprint(user_blueprint, url_prefix='/api/user')
+api_service = ApiRequestService(max_workers=3)
 
+# Register blueprints
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.register_blueprint(map_blueprint, url_prefix='/api/map')
 
@@ -56,16 +58,24 @@ def seed_database_if_empty():
     else:
         logger.info("Database already contains data. Skipping seeding.")
 
+
+@atexit.register
+def shutdown_worker():
+    logger.info("Shutting down ApiRequestService at application exit.")
+    api_service.shutdown()
+
 if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
-        logger.info("Service initialization completed.")
+        seed_database_if_empty()
 
-        seed_database_if_empty() # seed db for dev
-
-        # Start Flask server
-        app.run(host="0.0.0.0", port=8080)
+        # Check if running in development mode
+        if os.getenv("FLASK_ENV") == "development":
+            logger.info("Running Flask development server...")
+            app.run(host="0.0.0.0", port=8080)
+        else:
+            logger.info("Running in production mode. Use a WSGI server like Gunicorn.")
     except Exception as e:
         logger.error("Service failed to start: %s", e)
         exit(1)
