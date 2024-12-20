@@ -9,14 +9,14 @@ const expandAnimation = keyframes`
     opacity: 0;
   }
   to {
-    max-height: 500px;
+    100vh
     opacity: 1;
   }
 `;
 
 const collapseAnimation = keyframes`
   from {
-    max-height: 500px;
+    100vh
     opacity: 1;
   }
   to {
@@ -35,16 +35,16 @@ const ExpandableContainer = styled.div`
 const ToggleButton = styled.button`
   display: flex;
   margin: 0 auto; // Center the button
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: clamp(0.5rem, 0.4vw, 2rem);
+  margin-bottom: clamp(0.5rem, 0.4vw, 2rem);
   align-items: center;
   justify-content: space-between;
   background: ${websitePalette.secondary};
   color: ${websitePalette.text};
-  border: 2px solid black;
+  border: clamp(0.15rem, 0.12vw, 1rem) solid black;
   cursor: pointer;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: clamp(0.75rem, 0.6vw, 3rem) clamp(1.5rem, 1.2vw, 6rem);
+  font-size: clamp(1rem, 0.8vw, 4rem);
   font-weight: 600;
   width: calc(100% - 4rem);
   border-radius: 40px;
@@ -53,7 +53,7 @@ const ToggleButton = styled.button`
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       background-color: #5b5ea6;
-      border: 2px solid ${websitePalette.accent};
+      border: clamp(0.15rem, 0.12vw, 1rem) solid ${websitePalette.accent};
       color: ${websitePalette.accent};
     }
   }
@@ -62,8 +62,8 @@ const ToggleButton = styled.button`
 
 const ArrowIcon = styled.span`
   display: inline-block;
-  margin-left: 10px;
-  font-size: 16px;
+  margin-left: clamp(1rem, 0.8vw, 4rem);
+  font-size: clamp(1rem, 0.8vw, 4rem);
   transform: ${({ isExpanded }) => (isExpanded ? 'rotate(90deg)' : 'rotate(0deg)')};
   transition: transform 0.3s ease;
 `;

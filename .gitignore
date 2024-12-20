@@ -1,6 +1,9 @@
 /cache
 /src/cache
 pyrightconfig.json
+*pylsp.json
+pyproject.toml
+sgconfig.yml
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

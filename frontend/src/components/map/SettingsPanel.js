@@ -10,7 +10,7 @@ const StyledSettingsPanel = styled.div`
   top: 0;
   right: ${({ isOpen }) => isOpen ? '0' : '-100%'};
   bottom: 0;
-  width: 300px;
+  width: clamp(300px, 15vw, 1200px);
   background-color: ${websitePalette.foreground};
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
   z-index: 1100;
@@ -34,10 +34,10 @@ const StyledScrollableForm = styled.form`
 
 const StyledFormGroup = styled.div`
   margin: 0 auto;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding: 1rem;
-  border: 2px solid black;
+  margin-top: clamp(0.5rem, 0.4vw, 2rem);
+  margin-bottom: clamp(0.5rem, 0.4vw, 2rem);
+  padding: clamp(1rem, 0.8vw, 4rem);
+  border: clamp(0.15rem, 0.12vw, 1rem) solid black;
   border-radius: 40px;
   @media (max-width: 1000px) { // for tablets
     border-radius: 0;
@@ -54,26 +54,25 @@ const StyledButton = styled.button`
     background-color: ${websitePalette.secondary};
     color: ${websitePalette.text};
     margin: 0 auto; // Center the button
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    border: 2px solid black;
-    font-size: 1rem;
+    margin-top: clamp(0.5rem, 0.4vw, 2rem);
+    margin-bottom: clamp(0.5rem, 0.4vw, 2rem);
+    border: clamp(0.15rem, 0.12vw, 1rem) solid black;
+    font-size: clamp(1rem, 0.8vw, 4rem);
     font-weight: 600;
-    padding: 0.75rem 1.5rem;
+    padding: clamp(0.75rem, 0.6vw, 3rem) clamp(1.5rem, 1.2vw, 6rem);
     border-radius: 40px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-align: center;
     display: block; // Automatically takes full width, adjust as needed
-    width: calc(100% - 4rem); // Adjust width as needed, considering the padding of the parent
-    max-width: 20rem;
+    width: calc(100% - 4rem);
 
 
     @media (hover: hover) and (pointer: fine) {
         &:hover {
             background-color: #5b5ea6;
             color: ${websitePalette.accent};
-            border: 2px solid ${websitePalette.accent};
+            border: clamp(0.15rem, 0.12vw, 1rem) solid ${websitePalette.accent};
         }
     }
 `;

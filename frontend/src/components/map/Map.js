@@ -75,8 +75,8 @@ const startupAnimation = keyframes`
 const MapContainer = styled.div`
   position: relative;
   height: 80vh;
-  width: 80vw;
-  margin: 10vh auto;
+  width: 85vw;
+  margin: auto;
   border-radius: 40px;
   overflow: hidden;
 
@@ -91,19 +91,19 @@ const MapContainer = styled.div`
 const SettingsButton = styled.button`
   position: absolute;
   top: 30px;
-  right: ${({ isOpen }) => isOpen ? '320px' : '20px'};
+  right: ${({ isOpen }) => isOpen ? `clamp(320px, 16vw, 1210px)` : `clamp(10px, 1vw, 40px)`};
   z-index: 1200;
   background-color: ${({ isOpen }) => isOpen ? '#5b5ea6' : websitePalette.secondary};
   color: ${({ isOpen }) => isOpen ? websitePalette.accent : websitePalette.text};
-  border: ${({ isOpen }) => isOpen ? '2px solid ' + websitePalette.accent : '2px solid black'};
+  border: ${({ isOpen }) => isOpen ? 'clamp(0.15rem, 0.12vw, 1rem) solid ' + websitePalette.accent : 'clamp(0.15rem, 0.12vw, 1rem) solid black'};
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: clamp(3rem, 2.4vw, 12rem);
+  height: clamp(3rem, 2.4vw, 12rem);
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: clamp(1.4rem, 1.2vw, 4rem);
   transition: all 0.3s ease-in-out;
 
   @media (hover: hover) and (pointer: fine) {

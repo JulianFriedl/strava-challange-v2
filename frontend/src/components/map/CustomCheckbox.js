@@ -5,10 +5,10 @@ import websitePalette from '../../styles/palette';
 const CheckboxContainer = styled.label`
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
+  margin-bottom: clamp(1rem, 0.8vw, 4rem);
+  margin-top: clamp(1rem, 0.8vw, 4rem);
   cursor: pointer;
-  font-size: 1rem; // Base font size for better accessibility
+  font-size: clamp(1rem, 0.8vw, 4rem);
 
   @media (max-width: 1000px) {
     font-size: 1.5rem;
@@ -38,8 +38,8 @@ const hapticCheckbox = keyframes`
 `;
 
 const StyledCheckbox = styled.span`
-  width: 1.5rem;
-  height: 1.5rem;
+  width: clamp(1.3rem, 1.2vw, 4rem);
+  height: clamp(1.3rem, 1.2vw, 4rem);
 
   @media (max-width: 1000px) {
     width: 2.5rem;
@@ -48,9 +48,9 @@ const StyledCheckbox = styled.span`
 
   margin-right: 0.625rem;
   box-sizing: border-box;
-  border: 2px solid #ccc;
+  border: clamp(0.15rem, 0.12vw, 1rem) solid #ccc;
   background-color: ${props => props.checked ? props.color : 'transparent'};
-  border-radius: 0.3125rem;
+  border-radius: clamp(0.4rem, 0.35vw, 4rem);
   justify-content: center;
   align-items: center;
   transition: opacity 0.3s, background-color 0.5s, box-shadow 0.3s;
@@ -77,7 +77,7 @@ const StyledCheckbox = styled.span`
 `;
 
 const Label = styled.span`
-  margin-left: 0.5rem; // Converted to rem
+  margin-left: clamp(0.5rem, 0.4vw, 2rem); // Converted to rem
   overflow: hidden; // Hide overflowed content
   white-space: nowrap; // Prevent text from wrapping to a new line
   text-overflow: ellipsis; // Add ellipsis to overflowed content
