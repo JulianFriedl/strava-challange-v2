@@ -12,7 +12,6 @@ const StyledMap = styled.div`
     width: 100%;
     `;
 
-// Correct Leaflet icons path
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -30,12 +29,10 @@ export default function MapDisplay({ years, selectedAthletes }) {
 
     useEffect(() => {
         const clearHighlight = () => {
-            // Function to clear any highlighted polyline copies
             if (highlightedRoutesGroupRef.current) {
                 highlightedRoutesGroupRef.current.clearLayers(); // Remove all layers from the highlighted group
             }
         };
-        // Only initialize the map if it doesn't already exist
         if (!mapRef.current) {
             const map = L.map('map', {
                 center: [0, 0],
@@ -51,7 +48,6 @@ export default function MapDisplay({ years, selectedAthletes }) {
 
             mapRef.current = map;
 
-            // Initialize layer groups and add them to the map
             highlightedRoutesGroupRef.current = L.layerGroup().addTo(map);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -59,12 +55,10 @@ export default function MapDisplay({ years, selectedAthletes }) {
                 noWrap: true,
             }).addTo(map);
 
-            // Set isZoomingRef to true when zoom starts
             map.on('zoomstart', () => {
                 isZoomingRef.current = true;
             });
 
-            // Set isZoomingRef to false when zoom ends
             map.on('zoomend', () => {
                 isZoomingRef.current = false;
             });
@@ -101,7 +95,7 @@ export default function MapDisplay({ years, selectedAthletes }) {
                 mapRef.current.off('mouseout', clearHighlight);
                 mapRef.current.off('movestart', clearHighlight);
                 mapRef.current.off('zoomstart', clearHighlight);
-                mapRef.current.remove(); // Properly remove the map instance
+                mapRef.current.remove();
                 mapRef.current = null;
 
             }
@@ -116,7 +110,6 @@ export default function MapDisplay({ years, selectedAthletes }) {
 const isMobile = window.matchMedia("(max-width: 1000px)").matches;
 
 const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZoomingRef) => {
-    // Clear existing highlighted layers
     highlightedRoutesGroup.clearLayers();
 
     let allBounds = [];

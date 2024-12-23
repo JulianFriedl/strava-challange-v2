@@ -12,6 +12,7 @@ from scripts.seed_data import seed_athletes, seed_activities
 from services.core_services.task_service import TaskService
 from api.auth import auth_blueprint
 from api.map import map_blueprint
+from api.webhook import webhook_blueprint
 from config.log_config import setup_logging
 
 app = flask.Flask(__name__)
@@ -28,6 +29,7 @@ api_service = TaskService(max_workers=3)
 # Register blueprints
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.register_blueprint(map_blueprint, url_prefix='/api/map')
+app.register_blueprint(webhook_blueprint, url_prefix='/api/webhook')
 
 
 def initialize_database():

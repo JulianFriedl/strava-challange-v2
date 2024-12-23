@@ -35,17 +35,11 @@ def fetch_athlete_activities(athlete_id):
     end_of_results = False
 
     while not end_of_results:
-        # Wait if rate limits are near capacity
         rate_limit_tracker.wait_if_needed()
 
         headers = {"Authorization": f"Bearer {access_token}"}
         params = {"page": page, "per_page": PER_PAGE}
         response = requests.get("https://www.strava.com/api/v3/athlete/activities", headers=headers, params=params)
-
-        if response.status_code == 429:  # Rate limit exceeded
-            logger.warning("Rate limit exceeded. Waiting before retrying...")
-            rate_limit_tracker.wait_if_needed()
-            continue
 
         if response.status_code != 200:
             logger.error("Failed to fetch activities for athlete %d: %s", athlete_id, response.text)
@@ -60,7 +54,6 @@ def fetch_athlete_activities(athlete_id):
             activities.extend(data)
             page += 1
 
-        # Stop if the last page has fewer than PER_PAGE results
         if len(data) < PER_PAGE:
             end_of_results = True
 

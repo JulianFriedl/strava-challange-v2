@@ -43,7 +43,7 @@ def refresh_token(athlete: Athlete):
         new_tokens = {
             "access_token": data['access_token'],
             "refresh_token": data['refresh_token'],
-            "expires_at": data['expires_at'],  # Convert to datetime
+            "expires_at": data['expires_at'],
         }
 
         athlete_repo = AthleteRepository()
