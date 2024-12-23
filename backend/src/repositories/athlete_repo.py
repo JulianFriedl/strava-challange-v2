@@ -1,4 +1,4 @@
-from pymongo import ReturnDocument
+from pymongo import ReturnDocument, WriteConcern
 from pymongo.errors import DuplicateKeyError, PyMongoError
 from models.athlete import Athlete
 from utils.db_mongo import MongoDB
@@ -25,7 +25,7 @@ class AthleteRepository:
         """
         athlete_data = athlete.to_mongo()
         try:
-            result = self.collection.insert_one(athlete_data)
+            result = self.collection.with_options(write_concern=WriteConcern("majority")).insert_one(athlete_data)
             if result.acknowledged:
                 return result.inserted_id  # Return the inserted document's ID
             raise Exception("Insert operation not acknowledged by the database.")

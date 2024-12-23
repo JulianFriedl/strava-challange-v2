@@ -31,7 +31,7 @@ def seed_athletes(data_file):
             tokens={
                 "access_token": entry["strava_data"]["access_token"],
                 "refresh_token": entry["strava_data"]["refresh_token"],
-                "expires_at": datetime.utcfromtimestamp(entry["strava_data"]["expires_at"]),
+                "expires_at": entry["strava_data"]["expires_at"],
             },
         )
 

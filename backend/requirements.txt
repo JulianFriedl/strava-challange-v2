@@ -1,9 +1,11 @@
 Flask
+tenacity
 gunicorn
 flask-cors
 pymongo
 python-dotenv
 pytest
+mock
 polyline
 requests
 orjson

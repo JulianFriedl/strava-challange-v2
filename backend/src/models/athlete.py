@@ -8,10 +8,10 @@ class Profile:
 
 
 class Tokens:
-    def __init__(self, access_token: str, refresh_token: str, expires_at):
+    def __init__(self, access_token: str, refresh_token: str, expires_at: int):
         self.access_token = access_token
         self.refresh_token = refresh_token
-        self.expires_at = parse_datetime(expires_at)
+        self.expires_at = expires_at
 
 
 class Athlete:

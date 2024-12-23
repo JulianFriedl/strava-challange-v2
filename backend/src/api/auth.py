@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from services.auth_service import handle_strava_auth, process_strava_callback
-from api.exceptions import AuthorizationError, ScopeError, AthleteExistsError
+from services.api_services.auth_service import handle_strava_auth, process_strava_callback
+from api.exceptions import AuthorizationError, ScopeError
 import logging
 
 

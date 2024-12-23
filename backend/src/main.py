@@ -3,17 +3,13 @@ import logging
 import flask
 from flask_compress import Compress
 import flask_cors
-from datetime import datetime
 from pymongo.errors import ConnectionFailure
 import atexit
 
 from repositories.athlete_repo import AthleteRepository
-from repositories.activity_repo import ActivityRepository
-from models.activity import Activity, GeoJSONLineString
-from models.athlete import Athlete
 from utils.db_mongo import MongoDB
 from scripts.seed_data import seed_athletes, seed_activities
-from services.api_request_service import ApiRequestService
+from services.core_services.task_service import TaskService
 from api.auth import auth_blueprint
 from api.map import map_blueprint
 from config.log_config import setup_logging
@@ -27,11 +23,12 @@ compress.init_app(app)
 setup_logging()
 logger = logging.getLogger(__name__)
 
-api_service = ApiRequestService(max_workers=3)
+api_service = TaskService(max_workers=3)
 
 # Register blueprints
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.register_blueprint(map_blueprint, url_prefix='/api/map')
+
 
 def initialize_database():
     try:
@@ -50,7 +47,7 @@ def seed_database_if_empty():
 
     # Check for existing data
     if not athlete_repo.get_all_athletes():
-        logger.info(f"Database is empty, Seeding data...")
+        logger.info("Database is empty, Seeding data...")
         seed_athletes("./data/athletes.json")
         seed_activities("./data/activities.json")
         seed_activities("./data/activities2.json")
@@ -64,14 +61,14 @@ def shutdown_worker():
     logger.info("Shutting down ApiRequestService at application exit.")
     api_service.shutdown()
 
+
 if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
         seed_database_if_empty()
-
         # Check if running in development mode
-        if os.getenv("FLASK_ENV") == "development":
+        if os.getenv("FLASK_ENV", "development") == "development":
             logger.info("Running Flask development server...")
             app.run(host="0.0.0.0", port=8080)
         else:
