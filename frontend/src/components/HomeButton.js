@@ -30,7 +30,7 @@ const HomeButton = () => {
   };
 
   return (
-    <LogoContainer onClick={handleClick} aria-label="Return to Home">
+    <LogoContainer onClick={handleClick} aria-label="Return to Home"  role="button" tabIndex="0">
       <img src="/logo.svg" alt="Home" />
     </LogoContainer>
   );

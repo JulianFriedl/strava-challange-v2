@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const OverlayContainer = styled.div`
-  position: fixed;
+  // position: fixed;
   bottom: 0; /* Or top: 0 for top placement */
   width: 100%;
   background-color: rgba(255, 255, 255, 0.5); /* Slight transparency */

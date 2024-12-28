@@ -39,9 +39,9 @@ const StyledFormGroup = styled.div`
   padding: clamp(1rem, 0.8vw, 4rem);
   border: clamp(0.15rem, 0.12vw, 1rem) solid black;
   border-radius: 40px;
-  @media (max-width: 1000px) { // for tablets
-    border-radius: 0;
-  }
+  // @media (max-width: 1000px) { // for tablets
+  //   border-radius: 0;
+  // }
 
 `;
 

@@ -29,7 +29,7 @@ const LogoutButton = ({ onLogout }) => {
   };
 
   return (
-    <ButtonContainer onClick={handleClick} aria-label="Logout">
+    <ButtonContainer onClick={handleClick} aria-label="Logout" role="button" tabIndex="0">
       <img src="/logout.svg" alt="logout" />
     </ButtonContainer>
   );

@@ -14,7 +14,7 @@ const HeaderContainer = styled.header`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   max-height: clamp(4.5rem, 3.6vw, 50rem);
   z-index: 10;
-  position: fixed; /* Sticks to the top of the viewport */
+  // position: fixed; /* Sticks to the top of the viewport */
   width: 100%;
 `;
 

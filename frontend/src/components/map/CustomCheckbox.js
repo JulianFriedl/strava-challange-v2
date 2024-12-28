@@ -10,9 +10,9 @@ const CheckboxContainer = styled.label`
   cursor: pointer;
   font-size: clamp(1rem, 0.8vw, 4rem);
 
-  @media (max-width: 1000px) {
-    font-size: 1.5rem;
-  }
+  // @media (max-width: 1000px) {
+  //   font-size: 1.5rem;
+  // }
 `;
 
 const visuallyHidden = `
@@ -41,10 +41,10 @@ const StyledCheckbox = styled.span`
   width: clamp(1.3rem, 1.2vw, 4rem);
   height: clamp(1.3rem, 1.2vw, 4rem);
 
-  @media (max-width: 1000px) {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
+  // @media (max-width: 1000px) {
+  //   width: 2.5rem;
+  //   height: 2.5rem;
+  // }
 
   margin-right: 0.625rem;
   box-sizing: border-box;

@@ -43,7 +43,7 @@ const StravaButton = () => {
   };
 
   return (
-    <ButtonContainer onClick={handleClick} aria-label="Connect with Strava">
+    <ButtonContainer onClick={handleClick} aria-label="Connect with Strava" role="button" tabIndex="0">
       <img src="/btn_strava_connectwith_light.svg" alt="Connect with Strava" />
     </ButtonContainer>
   );
