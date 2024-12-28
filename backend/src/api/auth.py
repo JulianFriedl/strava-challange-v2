@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect, session
 from services.api_services.auth_service import handle_strava_auth, process_strava_callback
 from api.exceptions import AuthorizationError, ScopeError
 import logging
@@ -33,7 +33,10 @@ def strava_auth_callback():
 
     try:
         athlete_data = process_strava_callback(code)
-        return jsonify(athlete_data), 200
+        athlete_id = athlete_data.get("athlete_id")
+        session["user_id"] = athlete_id
+        frontend_url = f"http://localhost:5000/"
+        return redirect(frontend_url)
     except AuthorizationError as e:
         logger.error(f"Authorization error: {str(e)}")
         return jsonify({"error": str(e)}), e.status_code
@@ -43,3 +46,22 @@ def strava_auth_callback():
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
+
+
+@auth_blueprint.route('/status', methods=['GET'])
+def auth_status():
+    user_id = session.get("user_id")
+    if user_id:
+        return jsonify({"logged_in": True, "user_id": user_id})
+    return jsonify({"logged_in": False}), 401
+
+
+@auth_blueprint.route('/logout', methods=['POST'])
+def auth_logout():
+    if "user_id" in session:
+        logger.info(f"User {session.get('user_id')} logged out.")
+        session.clear()
+
+    response = jsonify({"message": "Logout successful"})
+    response.set_cookie('session', '', expires=0)
+    return response, 200

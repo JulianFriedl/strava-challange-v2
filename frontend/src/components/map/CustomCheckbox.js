@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import websitePalette from '../../styles/palette';
 
@@ -48,7 +48,7 @@ const StyledCheckbox = styled.span`
 
   margin-right: 0.625rem;
   box-sizing: border-box;
-  border: clamp(0.15rem, 0.12vw, 1rem) solid #ccc;
+  border: clamp(0.15rem, 0.12vw, 1rem) solid ${websitePalette.accentForeground};
   background-color: ${props => props.checked ? props.color : 'transparent'};
   border-radius: clamp(0.4rem, 0.35vw, 4rem);
   justify-content: center;

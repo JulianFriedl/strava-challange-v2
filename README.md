@@ -72,7 +72,6 @@ If you prefer to run the backend and frontend locally:
    ```
 
 2. **Run the Backend**:
-   ```
    Start the backend:
    ```bash
    python3 src/main.py

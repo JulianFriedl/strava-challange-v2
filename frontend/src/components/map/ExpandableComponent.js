@@ -27,7 +27,7 @@ const collapseAnimation = keyframes`
 
 const ExpandableContainer = styled.div`
   overflow: hidden;
-  animation: ${({ isExpanded }) => (isExpanded ? expandAnimation : collapseAnimation)} 0.5s ease forwards;
+  animation: ${({ $isExpanded }) => ($isExpanded ? expandAnimation : collapseAnimation)} 0.5s ease forwards;
   background: ${websitePalette.backgroundLight};
   border-radius: 40px;
 `;
@@ -64,27 +64,27 @@ const ArrowIcon = styled.span`
   display: inline-block;
   margin-left: clamp(1rem, 0.8vw, 4rem);
   font-size: clamp(1rem, 0.8vw, 4rem);
-  transform: ${({ isExpanded }) => (isExpanded ? 'rotate(90deg)' : 'rotate(0deg)')};
+  transform: ${({ $isExpanded }) => ($isExpanded ? 'rotate(90deg)' : 'rotate(0deg)')};
   transition: transform 0.3s ease;
 `;
 
 export default function ExpandableComponent({ children, label }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [$isExpanded, setIsExpanded] = useState(false);
 
   // Prevent event propagation to stop the settings panel from closing
   const handleToggleClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    setIsExpanded(!isExpanded);
+    setIsExpanded(!$isExpanded);
   };
 
   return (
     <>
-      <ToggleButton onClick={handleToggleClick} aria-expanded={isExpanded}>
+      <ToggleButton onClick={handleToggleClick} aria-expanded={$isExpanded}>
         <span>{label}</span>
-        <ArrowIcon isExpanded={isExpanded}>▶</ArrowIcon>
+        <ArrowIcon $isExpanded={$isExpanded}>▶</ArrowIcon>
       </ToggleButton>
-      <ExpandableContainer isExpanded={isExpanded}>
+      <ExpandableContainer $isExpanded={$isExpanded}>
         {children}
       </ExpandableContainer>
     </>

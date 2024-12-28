@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MapDisplay from './MapDisplay';
 import SettingsPanel from './SettingsPanel';
 import styled, { keyframes, css } from 'styled-components';
 import websitePalette from '../../styles/palette';
-
-const api_base_address = process.env.REACT_APP_API_BASE_URL;
-
+import { apiRequest } from '../../api';
 const colors = [
   '#f72585',
   '#7209b7',
   '#3a0ca3',
   '#4361ee',
   '#4cc9f0',
-  '#ff8900',
   '#ff5400',
+  '#ff8900',
   '#affc41',
   '#b2ff9e'
 ];
@@ -80,22 +79,22 @@ const MapContainer = styled.div`
   border-radius: 40px;
   overflow: hidden;
 
-  @media (max-width: 1000px) {
-    margin: 0;
-    height: 100vh;
-    width: 100vw;
-    border-radius: 0px;
-  }
+  // @media (max-width: 1000px) {
+  //   margin: 0;
+  //   height: 100vh;
+  //   width: 100vw;
+  //   border-radius: 0px;
+  // }
 `;
 
 const SettingsButton = styled.button`
   position: absolute;
   top: 30px;
-  right: ${({ isOpen }) => isOpen ? `clamp(320px, 16vw, 1210px)` : `clamp(10px, 1vw, 40px)`};
+  right: ${({ $isOpen }) => $isOpen ? `clamp(320px, 16vw, 1210px)` : `clamp(10px, 1vw, 40px)`};
   z-index: 1200;
-  background-color: ${({ isOpen }) => isOpen ? '#5b5ea6' : websitePalette.secondary};
-  color: ${({ isOpen }) => isOpen ? websitePalette.accent : websitePalette.text};
-  border: ${({ isOpen }) => isOpen ? 'clamp(0.15rem, 0.12vw, 1rem) solid ' + websitePalette.accent : 'clamp(0.15rem, 0.12vw, 1rem) solid black'};
+  background-color: ${({ $isOpen }) => $isOpen ? '#5b5ea6' : websitePalette.secondary};
+  color: ${({ $isOpen }) => $isOpen ? websitePalette.accent : websitePalette.text};
+  border: ${({ $isOpen }) => $isOpen ? 'clamp(0.15rem, 0.12vw, 1rem) solid ' + websitePalette.accent : 'clamp(0.15rem, 0.12vw, 1rem) solid black'};
   border-radius: 50%;
   width: clamp(3rem, 2.4vw, 12rem);
   height: clamp(3rem, 2.4vw, 12rem);
@@ -109,22 +108,22 @@ const SettingsButton = styled.button`
   @media (hover: hover) and (pointer: fine) {
 
     &:hover {
-      background-color: ${({ isOpen }) => isOpen ? websitePalette.secondary : '#5b5ea6'};
-      color: ${({ isOpen }) => isOpen ? websitePalette.text : websitePalette.accent};
-      border: ${({ isOpen }) => isOpen ? '2px solid black' : '2px solid'+ websitePalette.accent};
+      background-color: ${({ $isOpen }) => $isOpen ? websitePalette.secondary : '#5b5ea6'};
+      color: ${({ $isOpen }) => $isOpen ? websitePalette.text : websitePalette.accent};
+      border: ${({ $isOpen }) => $isOpen ? '2px solid black' : '2px solid'+ websitePalette.accent};
     }
   }
 
-  ${({ isFirstRender, isOpen, hasInteracted }) => {
-    if (isFirstRender) {
+  ${({ $isFirstRender, $isOpen, $hasInteracted }) => {
+    if ($isFirstRender) {
       return css`animation: ${startupAnimation} 1.2s ease-out forwards;`;
-    } else if (hasInteracted) {
-      return isOpen ? css`animation: ${rotate} 0.3s linear forwards;` : css`animation: ${rotateBack} 0.3s linear forwards;`;
+    } else if ($hasInteracted) {
+      return $isOpen ? css`animation: ${rotate} 0.3s linear forwards;` : css`animation: ${rotateBack} 0.3s linear forwards;`;
     }
   }}
 `;
 
-const Map = () => {
+const Map = ({ authState }) => {
   const [years, setYears] = useState([]);
   const [selectedAthletes, setSelectedAthletes] = useState([]);
   const [availableAthletes, setAvailableAthletes] = useState([]);
@@ -133,44 +132,40 @@ const Map = () => {
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  useEffect(() => {
+  const navigate = useNavigate();
+
+useEffect(() => {
+  if (authState && !authState.loggedIn) {
+    navigate('/');
+  }
+}, [authState, navigate]);
+
+useEffect(() => {
     // Fetch available athletes
-    fetch(`${api_base_address}/map/athletes`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch athletes');
-            }
-            return response.json();
-        })
-        .then(data => {
+    apiRequest('/map/athletes')
+        .then((data) => {
             const athletesWithColors = data.map((athlete, index) => {
                 const color = colors[index % colors.length];
-                return { ...athlete, color: color };
+                return { ...athlete, color };
             });
             setAvailableAthletes(athletesWithColors);
         })
-        .catch(error => {
+        .catch((error) => {
             console.error('Error fetching athletes:', error);
             setAvailableAthletes([]); // Provide an empty state
         });
 
     // Fetch available years
-    fetch(`${api_base_address}/map/years`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch years');
-            }
-            return response.json();
-        })
-        .then(data => setAvailableYears(data))
-        .catch(error => {
+    apiRequest('/map/years')
+        .then((data) => setAvailableYears(data))
+        .catch((error) => {
             console.error('Error fetching years:', error);
             setAvailableYears([]); // Provide an empty state
         });
 
     const timer = setTimeout(() => setIsFirstRender(false), 1200);
     return () => clearTimeout(timer);
-  }, []);
+}, []);
 
   const handleSettingsChange = (settings) => {
     setYears(settings.years);
@@ -189,14 +184,14 @@ const Map = () => {
   return (
     <MapContainer>
       <MapDisplay years={years} selectedAthletes={selectedAthletes} />
-      <SettingsButton isOpen={isSettingsOpen} isFirstRender={isFirstRender} hasInteracted={hasInteracted} onClick={toggleSettings}>
+      <SettingsButton $isOpen={isSettingsOpen} $isFirstRender={isFirstRender} $hasInteracted={hasInteracted} onClick={toggleSettings}>
         {'<'}
       </SettingsButton>
         <SettingsPanel
           onSettingsChange={handleSettingsChange}
           availableAthletes={availableAthletes}
           availableYears={availableYears}
-          isOpen={isSettingsOpen}
+          $isOpen={isSettingsOpen}
         />
     </MapContainer>
   );

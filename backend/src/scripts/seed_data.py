@@ -39,7 +39,8 @@ def seed_athletes(data_file):
             athlete_repo.create_athlete(athlete)
             print(f"Inserted athlete: {athlete.username}")
         except Exception as e:
-            print(f"Duplicate athlete: {athlete.username}, skipping...")
+            continue
+            # print(f"Duplicate athlete: {athlete.username}, skipping...")
 
 
 def seed_activities(data_file: str):
@@ -77,5 +78,5 @@ def seed_activities(data_file: str):
                 activity_repo.create_activity(activity)
                 # print(f"Inserted activity: {activity.name} for athlete ID {athlete_id}")
             except Exception as e:
-                print(f"Error inserting activity {activity.activity_id}: {e}")
-
+                continue
+                # print(f"Error inserting activity {activity.activity_id}: {e}")

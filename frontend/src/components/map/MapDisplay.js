@@ -1,11 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import L, { Tooltip } from 'leaflet';
-import polyline from 'polyline-encoded';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styled from 'styled-components';
-import { throttle } from 'lodash';
-
-const api_base_address = process.env.REACT_APP_API_BASE_URL
+import { apiRequest } from '../../api';
 
 const StyledMap = styled.div`
     height: 100%;
@@ -21,7 +18,7 @@ L.Icon.Default.mergeOptions({
 
 
 export default function MapDisplay({ years, selectedAthletes }) {
-    const [routesData, setRoutesData] = useState([]);
+    const [, setRoutesData] = useState([]);
     const mapRef = useRef(null);
     const highlightedRoutesGroupRef = useRef(null);
     const isZoomingRef = useRef(false); // Ref to track zooming state
@@ -64,30 +61,29 @@ export default function MapDisplay({ years, selectedAthletes }) {
             });
 
         }
+
         const fetchData = async () => {
+            if (years.length === 0 || selectedAthletes.length === 0) {
+                console.log('No parameters set, skipping fetch.');
+                return;
+            }
             try {
-                const url = new URL(api_base_address + '/map/');
-                const athleteIds = selectedAthletes.map(athlete => athlete.athlete_id);
-                const params = {
+                const params = new URLSearchParams({
                     years: years.join(','),
-                    athletes: athleteIds.join(','),
-                };
-                url.search = new URLSearchParams(params).toString();
+                    athletes: selectedAthletes.map((athlete) => athlete.athlete_id).join(','),
+                });
 
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch routes data');
+                const data = await apiRequest(`/map/?${params.toString()}`);
+                if (data) {
+                    setRoutesData(data || []);
+                    displayRoutes(data, mapRef.current, selectedAthletes, highlightedRoutesGroupRef.current, isZoomingRef);
                 }
-                const data = await response.json();
-
-                setRoutesData(data || []); // Ensure data is always an array
-                displayRoutes(data, mapRef.current, selectedAthletes, highlightedRoutesGroupRef.current, isZoomingRef);
             } catch (error) {
-                console.error('Error fetching data:', error);
                 setRoutesData([]); // Fallback to an empty state
             }
         };
         fetchData();
+
         // Cleanup function to run when the component unmounts
         return () => {
             if (mapRef.current) {
@@ -197,7 +193,7 @@ const attachEventsToPolyline = (polyline, routePolyline, activity, map, highligh
             <a href="${activity.url}" target="_blank">View Activity</a>
         `;
 
-        const popup = L.popup()
+         L.popup()
             .setLatLng(e.latlng)
             .setContent(popupContent)
             .openOn(map);

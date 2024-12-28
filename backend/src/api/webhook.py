@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 import logging
 
-from services.api_services.webhook_service import process_activity_event
+from services.api_services.webhook_service import process_event
 from api.exceptions import ParamError
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ def handle_webhook_event(req):
         return jsonify({'error': 'Invalid payload'}), 400
 
     try:
-        process_activity_event(event)
+        process_event(event)
         logger.info("Webhook event processed successfully.")
         return '', 200
     except ParamError as e:

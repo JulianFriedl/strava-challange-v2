@@ -61,13 +61,18 @@ class TaskService:
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
         retry=retry_if_exception_type(Exception),
-        before=lambda retry_state: logger.warning(
+        before=lambda retry_state: logger.info(
             f"Attempt {retry_state.attempt_number} for function {retry_state.fn}"
         ),
         after=lambda retry_state: logger.error(
             f"Failed after attempt {retry_state.attempt_number}: {retry_state.outcome.exception()}"
         ),
     )
+    #TODO: handle the case where all workers are blocked because of RatelimitTracker
+    # and a non rate limited tasks execution gets blocked because the other workers
+    # are waiting on the RatelimitTracker.
+    # possible requeue task execution instead of sleeping in RatelimitTracker, and
+    # then check in process task if the ratelimit has been reset yet before re-executing
     def process_task(self, task: Task):
         logger.info("Processing task - %s", task)
         try:

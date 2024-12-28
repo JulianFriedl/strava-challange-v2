@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import websitePalette from '../styles/palette'; // Import your color palette
+import websitePalette from '../styles/palette';
 
 
 const LogoContainer = styled.div`

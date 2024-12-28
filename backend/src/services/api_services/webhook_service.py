@@ -5,7 +5,7 @@ from api.exceptions import ParamError
 
 logger = logging.getLogger(__name__)
 
-def process_activity_event(event):
+def process_event(event):
     """Process incoming activity event."""
     object_type = event.get("object_type")
     aspect_type = event.get("aspect_type")
@@ -57,7 +57,7 @@ def process_activity_event(event):
                     "event_time": event.get("event_time"),
                     "updates": updates,
                 },
-                task_type=TaskType.OTHER_EVENT,
+                task_type=TaskType.HANDLE_UPDATED_ATHLETE,
             )
         )
     else:

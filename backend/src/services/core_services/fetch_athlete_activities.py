@@ -59,7 +59,6 @@ def fetch_athlete_activities(athlete_id):
 
     logger.info("Fetched %d activities for athlete %d.", len(activities), athlete_id)
 
-
     for activity_data in activities:
         try:
             # Validate fields
@@ -100,7 +99,6 @@ def fetch_athlete_activities(athlete_id):
             activity_repo.create_activity(activity)
             logger.debug(f"Inserted activity {activity.activity_id} for athlete {athlete_id}.")
         except Exception as e:
-            logger.error(f"Failed to process activity {activity_data.get('id')}: {e}")
+            logger.debug(f"Failed to process activity {activity_data.get('id')}: {e}")
 
     logger.info("Inserted activities for athlete %d.", athlete_id)
-

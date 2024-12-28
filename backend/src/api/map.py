@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, Response
+from flask import Blueprint, jsonify, request, Response, redirect, session
 from services.api_services.map_service import get_activities_with_polylines, get_all_athletes, get_all_years
 import logging
 import orjson
@@ -16,6 +16,11 @@ def map():
     Return a list of all the activities that have a polyline and are associated
     with the athlete ID(s) and year(s).
     """
+
+    if not session.get("user_id"):
+        logger.info("Not logged in.")
+        return jsonify({"error": "unauthenticated"}), 401
+
     # profiler = cProfile.Profile()
     # profiler.enable()
     try:
@@ -70,6 +75,9 @@ def athletes():
     Return a list of all the athletes in the database with their metadata.
     """
     logger.info("Athletes request received.")
+    if not session.get("user_id"):
+        logger.info("Not logged in.")
+        return jsonify({"error": "unauthenticated"}), 401
 
     try:
         all_athletes = get_all_athletes()
@@ -84,6 +92,10 @@ def years():
     Return all available years in the activities.
     """
     logger.info("Years request received.")
+
+    if not session.get("user_id"):
+        logger.info("Not logged in.")
+        return jsonify({"error": "unauthenticated"}), 401
 
     try:
         available_years = get_all_years()

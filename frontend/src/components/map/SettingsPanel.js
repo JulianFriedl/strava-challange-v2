@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import websitePalette from '../../styles/palette';
 import CustomCheckbox from './CustomCheckbox';
 import ExpandableComponent from './ExpandableComponent';
@@ -8,7 +8,7 @@ import ExpandableComponent from './ExpandableComponent';
 const StyledSettingsPanel = styled.div`
   position: absolute;
   top: 0;
-  right: ${({ isOpen }) => isOpen ? '0' : '-100%'};
+  right: ${({ $isOpen }) => $isOpen ? '0' : '-100%'};
   bottom: 0;
   width: clamp(300px, 15vw, 1200px);
   background-color: ${websitePalette.foreground};
@@ -20,11 +20,11 @@ const StyledSettingsPanel = styled.div`
   border-radius: 40px 0 0 40px;
   overflow: hidden; // Important to contain the scrollable area
 
-  @media (max-width: 1000px) {
-    width: 100vw;
-    border-radius: 0px;
-    right: ${({ isOpen }) => isOpen ? '0' : '-110vw'};
-  }
+  // @media (max-width: 1000px) {
+  //   width: 100vw;
+  //   border-radius: 0px;
+  //   right: ${({ $isOpen }) => $isOpen ? '0' : '-110vw'};
+  // }
 `;
 
 const StyledScrollableForm = styled.form`
@@ -45,11 +45,6 @@ const StyledFormGroup = styled.div`
 
 `;
 
-const StyledSectionHeader = styled.h2`
-  font-weight: 600;
-  color: #333;
-  margin-top: 0.5rem;
-`;
 const StyledButton = styled.button`
     background-color: ${websitePalette.secondary};
     color: ${websitePalette.text};
@@ -78,7 +73,7 @@ const StyledButton = styled.button`
 `;
 
 
-export default function SettingsPanel({ onSettingsChange, availableAthletes, availableYears, isOpen }) {
+export default function SettingsPanel({ onSettingsChange, availableAthletes, availableYears, $isOpen }) {
     const [selectedAthletes, setSelectedAthletes] = useState([]);
     const [selectedYears, setSelectedYears] = useState({});
 
@@ -89,7 +84,7 @@ export default function SettingsPanel({ onSettingsChange, availableAthletes, ava
         }));
     };
 
-    function handleAthleteChange(athlete) {
+    const handleAthleteChange = (athlete) => {
         setSelectedAthletes(prevSelection => {
             const athleteId = athlete.athlete_id.toString();
             if (prevSelection.some(a => a.id === athleteId)) {
@@ -100,16 +95,15 @@ export default function SettingsPanel({ onSettingsChange, availableAthletes, ava
         });
     };
 
-    function handleSubmit(e) {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const years = Object.keys(selectedYears).filter(year => selectedYears[year]);
         const athleteIds = selectedAthletes.map(a => a.id);
-        // console.log(athleteIds);
         onSettingsChange({ years, selectedAthletes: athleteIds });
     };
 
     return (
-        <StyledSettingsPanel isOpen={isOpen}>
+        <StyledSettingsPanel $isOpen={$isOpen}>
             <StyledScrollableForm>
                 <ExpandableComponent label="Years">
                     <StyledFormGroup>
