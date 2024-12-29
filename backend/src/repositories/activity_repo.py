@@ -115,7 +115,12 @@ class ActivityRepository:
                 "year": {"$in": years},
                 "summary_polyline": { "$ne": None}
             }
-            projection = {"_id": 0}
+            projection = {"_id": 0,
+                          "kudos": 0,
+                          "suffer_score": 0,
+                          "total_elevation_gain": 0,
+                          "start_date": 0}
+
             results = list(self.collection.find(query, projection))
             return results
         except PyMongoError as e:

@@ -7,6 +7,8 @@ from api.exceptions import ParamError
 logger = logging.getLogger(__name__)
 webhook_blueprint = Blueprint('webhook', __name__)
 
+VERIFY_TOKEN = 'fhgndpahFHDdjdbG837zFH9g98ghH'
+
 @webhook_blueprint.route('', methods=['GET', 'POST'])
 def webhook_callback():
     if request.method == 'GET':
@@ -18,7 +20,9 @@ def webhook_callback():
 def handle_subscription_verification(req):
     """Handles the initial subscription verification from Strava."""
     challenge = req.args.get('hub.challenge')
-    if challenge:
+    verify_token = req.args.get('hub.verify_token')
+    logger.info(f"Subscription verification received. challenge:{challenge}, verify_token:{verify_token}.")
+    if challenge and verify_token == VERIFY_TOKEN:
         logger.info("Subscription verification received.")
         return jsonify({'hub.challenge': challenge}), 200
     else:

@@ -5,6 +5,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# TODO: currently the rate limit tracker only tracks the read limit, but the
+# general limit is higher than the read limit, this might block and api request
+# that isn't a get request if the read limit is reached but the general isnt reached.
 class RateLimitTracker:
     _instance = None
 
@@ -34,10 +37,10 @@ class RateLimitTracker:
     def update_limits(self, headers):
         """Update rate limits and usage directly from API response headers."""
         with self.lock:
-            self.limit_15_min = int(headers.get("X-RateLimit-Limit", "200").split(",")[0])
-            self.limit_daily = int(headers.get("X-RateLimit-Limit", "1000").split(",")[1])
-            self.requests_15_min = int(headers.get("X-RateLimit-Usage", "0").split(",")[0])
-            self.requests_daily = int(headers.get("X-RateLimit-Usage", "0").split(",")[1])
+            self.limit_15_min = int(headers.get("X-ReadRateLimit-Limit", "200").split(",")[0])
+            self.limit_daily = int(headers.get("X-ReadRateLimit-Limit", "1000").split(",")[1])
+            self.requests_15_min = int(headers.get("X-ReadRateLimit-Usage", "0").split(",")[0])
+            self.requests_daily = int(headers.get("X-ReadRateLimit-Usage", "0").split(",")[1])
 
             logger.info("Rate limits updated: 15-min=%d/%d, daily=%d/%d",
                         self.requests_15_min, self.limit_15_min,

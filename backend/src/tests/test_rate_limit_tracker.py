@@ -32,8 +32,8 @@ def test_wait_if_needed(mock_sleep, rate_limit_tracker):
 def test_update_limits(rate_limit_tracker):
     """Test that update_limits correctly updates from headers."""
     headers = {
-        "X-RateLimit-Limit": "100,1000",
-        "X-RateLimit-Usage": "50,500"
+        "X-ReadRateLimit-Limit": "100,1000",
+        "X-ReadRateLimit-Usage": "50,500"
     }
 
     rate_limit_tracker.update_limits(headers)
@@ -54,8 +54,8 @@ def test_combined_logic(mock_sleep, mock_datetime, rate_limit_tracker):
 
     # Update limits to simulate headers
     headers = {
-        "X-RateLimit-Limit": "100,1000",
-        "X-RateLimit-Usage": "100,999"
+        "X-ReadRateLimit-Limit": "100,1000",
+        "X-ReadRateLimit-Usage": "100,999"
     }
     rate_limit_tracker.update_limits(headers)
 

@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request, redirect, session
+import logging
+import os
+
 from services.api_services.auth_service import handle_strava_auth, process_strava_callback
 from api.exceptions import AuthorizationError, ScopeError
-import logging
 
 
 logger = logging.getLogger(__name__)
@@ -35,8 +37,7 @@ def strava_auth_callback():
         athlete_data = process_strava_callback(code)
         athlete_id = athlete_data.get("athlete_id")
         session["user_id"] = athlete_id
-        frontend_url = f"http://localhost:5000/"
-        return redirect(frontend_url)
+        return redirect(os.getenv("FRONTEND_URL", "http://localhost:5000/"))
     except AuthorizationError as e:
         logger.error(f"Authorization error: {str(e)}")
         return jsonify({"error": str(e)}), e.status_code

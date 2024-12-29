@@ -85,7 +85,7 @@ class TaskService:
                 if not activity_id:
                     logger.error("Missing 'activity_id' in params for HANDLE_NEW_ACTIVITY.")
                     return
-                handle_new_activity(activity_id)
+                handle_new_activity(activity_id, task.athlete_id)
                 logger.info(f"Handled new activity: {task.params}")
 
             elif task.task_type == TaskType.HANDLE_UPDATED_ACTIVITY:

@@ -74,14 +74,14 @@ def seed_database_if_empty():
 @atexit.register
 def shutdown_worker():
     logger.info("Shutting down ApiRequestService at application exit.")
-    api_service.shutdown()
+    TaskService.shutdown()
 
 
 if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
-        seed_database_if_empty()
+        # seed_database_if_empty()
         TaskService(max_workers=3)
         # Check if running in development mode
         if os.getenv("FLASK_ENV", "development") == "development":
