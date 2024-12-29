@@ -126,3 +126,15 @@ class ActivityRepository:
         except PyMongoError as e:
             logger.error(f"Failed to list activities with polylines: {e}")
             return []
+
+    def delete_activities_by_athlete_id(self, athlete_id: int):
+        """
+        Delete all activities associated with a given athlete ID.
+        """
+        try:
+            result = self.collection.delete_many({"athlete_id": athlete_id})
+
+            logger.info(f"Deleted {result.deleted_count} activities for athlete ID {athlete_id}.")
+            return result.deleted_count
+        except PyMongoError as e:
+            raise Exception(f"Error deleting activities for athlete ID {athlete_id}.") from e

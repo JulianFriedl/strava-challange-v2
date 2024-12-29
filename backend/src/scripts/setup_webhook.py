@@ -1,8 +1,10 @@
 import requests
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+dotenv_path = Path('../../../.env')
+load_dotenv(dotenv_path=dotenv_path)
 
 BASE_URL = "https://www.strava.com/api/v3"
 CALLBACK_URL = "http://stravascape.site/api/webhook"

@@ -1,32 +1,29 @@
 import logging
 
 from repositories.athlete_repo import AthleteRepository
+from repositories.activity_repo import ActivityRepository
 
 logger = logging.getLogger(__name__)
 
 def handle_updated_athlete(athlete_id: int, updated_fields: dict):
     """
-    Handle updates to an athlete's profile, preferences, or account status.
+    Handle updates to an athlete, specifically handling the case where access is revoked.
     """
     athlete_repo = AthleteRepository()
+    activity_repo = ActivityRepository()
 
     try:
-        # valid_fields = {"name", "profile_picture", "location", "privacy_settings", "status"}
-        # filtered_fields = {key: value for key, value in updated_fields.items() if key in valid_fields}
+        if updated_fields.get("authorized") == "false":
+            athlete_deleted = athlete_repo.delete_athlete(athlete_id)
+            if not athlete_deleted:
+                logger.warning(f"Athlete {athlete_id} not found. No deletion performed.")
 
-        # if not filtered_fields:
-        #     logger.warning(f"No valid fields to update for athlete {athlete_id}. Skipping update.")
-        #     return None
+            deleted_count = activity_repo.delete_activities_by_athlete_id(athlete_id)
+            logger.info(f"Deleted {deleted_count} activities for athlete {athlete_id}.")
 
-        athlete_repo.update_athlete(athlete_id, updated_fields)
-        logger.info(f"Successfully updated athlete {athlete_id} with fields: {updated_fields}")
-
-        #TODO: Handle these cases
-        if "privacy_settings" in updated_fields:
-            logger.info(f"Privacy settings updated for athlete {athlete_id}.")
-
-        if "status" in updated_fields and updated_fields["status"] == "deactivated":
-            logger.info(f"Athlete {athlete_id} deactivated.")
+            logger.info(f"Successfully handled deauthorization for athlete {athlete_id}.")
+        else:
+            logger.warning(f"Unexpected update fields for athlete {athlete_id}: {updated_fields}")
 
     except Exception as e:
-        raise Exception(f"Error updating athlete {athlete_id}") from e
+        raise Exception(f"Failed to handle updated athlete {athlete_id}.") from e

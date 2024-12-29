@@ -72,4 +72,3 @@ class Athlete:
             "profile": self.profile,
             # Note: Exclude tokens if returning this data to the frontend
         }
-

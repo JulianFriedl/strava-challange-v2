@@ -31,6 +31,7 @@ def handle_subscription_verification(req):
 
 def handle_webhook_event(req):
     """Handles incoming webhook events from Strava."""
+    logger.info("Webhook event received.")
     event = req.json
     if not event:
         logger.warning("Webhook event received with no JSON payload.")
