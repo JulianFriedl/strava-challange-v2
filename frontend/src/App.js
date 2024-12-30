@@ -30,19 +30,6 @@ const AppContainer = styled.div`
   height: 100vh;
 `;
 
-const Content = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const InnerContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 60vw;
-  text-align: center;
-`;
-
 function App() {
   const [authState, setAuthState] = useState({ loggedIn: false, userId: null });
   const [isLoading, setIsLoading] = useState(true);
@@ -92,16 +79,12 @@ function App() {
       <Router>
         <AppContainer>
           <Header authState={authState} onLogout={handleLogout} />
-          <Content>
-            <InnerContent>
-              <Routes>
-                <Route path="/map" element={<Map authState={authState} />} />
-                <Route path="/" element={<Login authState={authState} />} />
-              </Routes>
-              <About />
-              <Overlay />
-            </InnerContent>
-          </Content>
+          <Routes>
+            <Route path="/map" element={<Map authState={authState} />} />
+            <Route path="/" element={<Login authState={authState} />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+          <Overlay />
         </AppContainer>
       </Router>
     </>

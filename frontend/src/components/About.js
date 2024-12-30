@@ -2,11 +2,19 @@ import React from 'react';
 import styled from 'styled-components';
 import websitePalette from '../styles/palette';
 
+const AboutContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 60vw;
 `;
 
 const Title = styled.h1`
@@ -19,10 +27,10 @@ const Bold = styled.span`
   font-weight: bold;
 `;
 
-function About() {
+const About = () => {
 
   return (
-    <>
+    <AboutContainer>
       <Container>
         <Title>Rules</Title>
         <h4>General information</h4>
@@ -31,6 +39,7 @@ function About() {
           Every challenge has a leaderboard. And so there's no exception to this one.
           There will be one total leaderboard, but also one for each type of activity* (*subject to grouping).
           The ranking in the total leaderboard is determined by the <Bold>Top 3 places of all activity based rankings</Bold> of a person.
+          The rank is based on the total hours of moving time in an activity group. NOTE: there's an exception to alpine skiing as well as snowboarding. The measurement unit for this sport is the total amount of descended vertical meters.
           <br />
           Regarding points, a person comming in first in an activity ranking, will get 10 points. The tenth person in that ranking will get 1 point. You can guess the rest.
           <br />
@@ -75,7 +84,7 @@ function About() {
           This means that only the first five places will get extra money at all. However, there will still be a great evening at the end of the year at a restaurant, which will likely be paid by the prizepool money. So, everybody has some sort of benefit at the end.
         </p>
       </Container>
-    </>
+    </AboutContainer>
   );
 }
 

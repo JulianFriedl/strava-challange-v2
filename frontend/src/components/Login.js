@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import StravaButton from './StravaButton';
 import websitePalette from '../styles/palette';
+import About from './About';
 
 const LoginContainer = styled.div`
   display: flex;
@@ -42,6 +43,7 @@ const Login = ({ authState }) => {
         <LoggedInMessage>
           You are logged in as User {authState.userId}. Go to the <a href="/map">map</a> to explore your routes.
         </LoggedInMessage>
+        <About />
       </LoginContainer>
     );
   }
@@ -53,6 +55,7 @@ const Login = ({ authState }) => {
       {/* <StravaButtonWrapper>
         <StravaButton />
       </StravaButtonWrapper> */}
+      <About />
     </LoginContainer>
   );
 };
