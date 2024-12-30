@@ -2,7 +2,6 @@ import os
 import logging
 from flask import Flask, session
 from flask_session import Session
-from flask_compress import Compress
 import flask_cors
 from pymongo.errors import ConnectionFailure
 import atexit
@@ -15,6 +14,7 @@ from services.core_services.task_service import TaskService
 from api.auth import auth_blueprint
 from api.map import map_blueprint
 from api.webhook import webhook_blueprint
+from api.leaderboard import leaderboard_blueprint
 from config.log_config import setup_logging
 
 app = Flask(__name__)
@@ -33,9 +33,6 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True       # Prevent JavaScript access
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'      # Mitigate CSRF, might need to be disapled in prod
 Session(app)
 
-compress = Compress()
-compress.init_app(app)
-
 setup_logging()
 logger = logging.getLogger(__name__)
 
@@ -43,6 +40,7 @@ logger = logging.getLogger(__name__)
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.register_blueprint(map_blueprint, url_prefix='/api/map')
 app.register_blueprint(webhook_blueprint, url_prefix='/api/webhook')
+app.register_blueprint(leaderboard_blueprint, url_prefix='/api/leaderboard')
 
 
 def initialize_database():
@@ -81,7 +79,7 @@ if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
-        # seed_database_if_empty()
+        seed_database_if_empty()
         TaskService(max_workers=3)
         # Check if running in development mode
         if os.getenv("FLASK_ENV", "development") == "development":

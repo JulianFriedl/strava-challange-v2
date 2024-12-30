@@ -8,6 +8,7 @@ const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center; align-items: center;
+  // height: calc(var(--vh, 1vh) * 100); /* Dynamically adjust to mobile viewport */
   background-color: ${websitePalette.background};
   color: ${websitePalette.text};
   text-align: center;

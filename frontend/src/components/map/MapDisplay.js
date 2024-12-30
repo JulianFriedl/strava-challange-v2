@@ -17,33 +17,27 @@ L.Icon.Default.mergeOptions({
 });
 
 
-export default function MapDisplay({ years, selectedAthletes }) {
+export default function MapDisplay({ years, selectedAthletes, onLoadComplete}) {
     const [, setRoutesData] = useState([]);
     const mapRef = useRef(null);
+    const routesGroupRef = useRef(null);
     const highlightedRoutesGroupRef = useRef(null);
     const isZoomingRef = useRef(false); // Ref to track zooming state
+    const cancelDrawingRef = useRef(false);
 
-
+    // Initialize the map once
     useEffect(() => {
-        const clearHighlight = () => {
-            if (highlightedRoutesGroupRef.current) {
-                highlightedRoutesGroupRef.current.clearLayers(); // Remove all layers from the highlighted group
-            }
-        };
         if (!mapRef.current) {
             const map = L.map('map', {
                 center: [0, 0],
                 zoom: 3,
                 maxZoom: 22,
                 minZoom: 3,
-                maxBounds: [[-90, -180], [90, 180]], // Limit the view to a single world
-                maxBoundsViscosity: 1.0, // Makes it harder to drag the map outside of maxBounds
+                maxBounds: [[-90, -180], [90, 180]],
+                maxBoundsViscosity: 1.0,
             });
-            map.on('mouseout', clearHighlight); // Mouse leaves the map area
-            map.on('movestart', clearHighlight); // Starts moving the map
-            map.on('zoomstart', clearHighlight); // Starts zooming the map
 
-            mapRef.current = map;
+            routesGroupRef.current = L.layerGroup().addTo(map);
 
             highlightedRoutesGroupRef.current = L.layerGroup().addTo(map);
 
@@ -60,13 +54,23 @@ export default function MapDisplay({ years, selectedAthletes }) {
                 isZoomingRef.current = false;
             });
 
+            mapRef.current = map;
         }
+    }, []);
 
-        const fetchData = async () => {
+    useEffect(() => {
+      // Clear all existing map layers (routes and highlights)
+      if (mapRef.current && highlightedRoutesGroupRef.current) {
+          routesGroupRef.current.clearLayers();
+          highlightedRoutesGroupRef.current.clearLayers();
+      }
+       const fetchDataAndDraw = async () => {
             if (years.length === 0 || selectedAthletes.length === 0) {
-                console.log('No parameters set, skipping fetch.');
+                // console.log('No parameters set, skipping fetch.');
+                onLoadComplete();
                 return;
             }
+
             try {
                 const params = new URLSearchParams({
                     years: years.join(','),
@@ -75,37 +79,44 @@ export default function MapDisplay({ years, selectedAthletes }) {
 
                 const data = await apiRequest(`/map/?${params.toString()}`);
                 if (data) {
+                    cancelDrawingRef.current = false;
                     setRoutesData(data || []);
-                    displayRoutes(data, mapRef.current, selectedAthletes, highlightedRoutesGroupRef.current, isZoomingRef);
+                    await displayRoutes(
+                        data,
+                        mapRef.current,
+                        selectedAthletes,
+                        highlightedRoutesGroupRef.current,
+                        isZoomingRef,
+                        cancelDrawingRef,
+                        routesGroupRef.current
+                    );
                 }
             } catch (error) {
-                setRoutesData([]); // Fallback to an empty state
+                console.error('Error fetching data:', error);
+                setRoutesData([]);
+            } finally {
+                onLoadComplete();
             }
         };
-        fetchData();
 
-        // Cleanup function to run when the component unmounts
+        fetchDataAndDraw();
+
         return () => {
-            if (mapRef.current) {
-                // Cleanup event listeners
-                mapRef.current.off('mouseout', clearHighlight);
-                mapRef.current.off('movestart', clearHighlight);
-                mapRef.current.off('zoomstart', clearHighlight);
-                mapRef.current.remove();
-                mapRef.current = null;
-
-            }
+            cancelDrawingRef.current = true;
         };
     }, [years, selectedAthletes]);
 
-    return (
-        <StyledMap id="map" />
-    );
-};
+    return <StyledMap id="map" />;
+}
 
 const isMobile = window.matchMedia("(max-width: 1000px)").matches;
 
-const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZoomingRef) => {
+const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZoomingRef, cancelDrawingRef, routesGroup) => {
+
+   if (!data || data.length === 0) {
+        console.warn('No valid data to display.');
+        return;
+    }
     highlightedRoutesGroup.clearLayers();
 
     let allBounds = [];
@@ -113,6 +124,10 @@ const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZo
     let index = 0;
 
     const processNextBatch = () => {
+        if (cancelDrawingRef.current) {
+            // console.log('Drawing canceled.');
+            return;
+        }
         const batch = data.slice(index, index + batchSize);
         batch.forEach(activity => {
             const athleteColor =
@@ -125,14 +140,14 @@ const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZo
                     color: athleteColor,
                     opacity: 1,
                     weight: 2,
-                }).addTo(map);
+                }).addTo(routesGroup);
 
                 if (!isMobile) {
                     const interactionPolyline = L.polyline(latLngs, {
                         color: 'transparent',
                         opacity: 0,
                         weight: 10, // Increase weight for the interaction area
-                    }).addTo(map);
+                    }).addTo(routesGroup);
 
                     attachEventsToPolyline(interactionPolyline, routePolyline, activity, map, highlightedRoutesGroup, isZoomingRef);
                 } else {
