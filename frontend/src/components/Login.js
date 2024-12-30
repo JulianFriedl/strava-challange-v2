@@ -7,7 +7,6 @@ const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center; align-items: center;
-  height: 100vh;
   background-color: ${websitePalette.background};
   color: ${websitePalette.text};
   text-align: center;
@@ -51,9 +50,9 @@ const Login = ({ authState }) => {
     <LoginContainer>
       <Title>Welcome</Title>
       <Description>Log in to explore your routes, stats, and more!</Description>
-      <StravaButtonWrapper>
+      {/* <StravaButtonWrapper>
         <StravaButton />
-      </StravaButtonWrapper>
+      </StravaButtonWrapper> */}
     </LoginContainer>
   );
 };

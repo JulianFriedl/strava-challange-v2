@@ -8,6 +8,7 @@ import Overlay from './components/Overlay';
 import { createGlobalStyle } from 'styled-components';
 import websitePalette from './styles/palette';
 import { API_BASE_URL } from './api';
+import About from './components/About.js';
 
 export const GlobalStyle = createGlobalStyle`
   *,
@@ -27,6 +28,19 @@ const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+`;
+
+const Content = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const InnerContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 60vw;
+  text-align: center;
 `;
 
 function App() {
@@ -78,11 +92,16 @@ function App() {
       <Router>
         <AppContainer>
           <Header authState={authState} onLogout={handleLogout} />
-          <Routes>
-            <Route path="/map" element={<Map authState={authState} />} />
-            <Route path="/" element={<Login authState={authState} />} />
-          </Routes>
-          <Overlay />
+          <Content>
+            <InnerContent>
+              <Routes>
+                <Route path="/map" element={<Map authState={authState} />} />
+                <Route path="/" element={<Login authState={authState} />} />
+              </Routes>
+              <About />
+              <Overlay />
+            </InnerContent>
+          </Content>
         </AppContainer>
       </Router>
     </>
