@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 map_blueprint = Blueprint('map', __name__)
 
 @map_blueprint.route('/', methods=['GET'])
+@map_blueprint.route('', methods=['GET'])
 def map():
     """
     Return a list of all the activities that have a polyline and are associated

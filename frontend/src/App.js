@@ -22,18 +22,38 @@ export const GlobalStyle = createGlobalStyle`
     color: ${websitePalette.text};
     font-family: 'Arial', sans-serif;
   }
+  #root {
+    height: 100%;
+  }
+
+  .full-height {
+    height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height */
+  }
 `;
 
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
 `;
 
 function App() {
   const [authState, setAuthState] = useState({ loggedIn: false, userId: null });
   const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+      // Adjust the viewport height for mobile browsers
+      const setViewportHeight = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
 
+      setViewportHeight(); // Set on initial load
+      window.addEventListener('resize', setViewportHeight); // Update on resize
+
+      return () => {
+        window.removeEventListener('resize', setViewportHeight);
+      };
+    }, []);
   useEffect(() => {
     const fetchAuthState = async () => {
       try {

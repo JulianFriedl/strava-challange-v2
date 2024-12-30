@@ -73,7 +73,7 @@ const startupAnimation = keyframes`
 
 const MapContainer = styled.div`
   position: relative;
-  height: 80vh;
+  height: calc(var(--vh, 1vh) * 80); /* Dynamically adjust to mobile viewport */
   width: 85vw;
   margin: auto;
   border-radius: 40px;
@@ -131,6 +131,7 @@ const Map = ({ authState }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
 
   const navigate = useNavigate();
 
@@ -168,12 +169,30 @@ useEffect(() => {
 }, []);
 
   const handleSettingsChange = (settings) => {
-    setYears(settings.years);
-    // Find the full athlete objects including their colors from selected IDs
-    const selectedAthleteDetails = settings.selectedAthletes.map(id =>
-      availableAthletes.find(athlete => athlete.athlete_id.toString() === id)
-    );
-    setSelectedAthletes(selectedAthleteDetails);
+      if (isLoading) return
+
+      const yearsChanged = JSON.stringify(settings.years) !== JSON.stringify(years);
+
+      const athletesChanged = JSON.stringify(settings.selectedAthletes.map(String).sort()) !==
+          JSON.stringify(selectedAthletes.map((athlete) => String(athlete.athlete_id)).sort());
+
+      if (!yearsChanged && !athletesChanged) {
+          // console.log("No changes detected in settings, skipping update.");
+          return;
+      }
+      setIsLoading(true);
+
+      // Update states with new settings
+      setYears(settings.years);
+
+      const selectedAthleteDetails = settings.selectedAthletes.map((id) =>
+          availableAthletes.find((athlete) => athlete.athlete_id.toString() === id)
+      );
+      setSelectedAthletes(selectedAthleteDetails);
+  };
+
+  const handleMapLoadComplete = () => {
+    setIsLoading(false);
   };
 
   const toggleSettings = () => {
@@ -183,7 +202,7 @@ useEffect(() => {
 
   return (
     <MapContainer>
-      <MapDisplay years={years} selectedAthletes={selectedAthletes} />
+      <MapDisplay years={years} selectedAthletes={selectedAthletes} isLoading={isLoading} onLoadComplete={handleMapLoadComplete}/>
       <SettingsButton $isOpen={isSettingsOpen} $isFirstRender={isFirstRender} $hasInteracted={hasInteracted} onClick={toggleSettings}>
         {'<'}
       </SettingsButton>

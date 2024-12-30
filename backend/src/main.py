@@ -2,7 +2,6 @@ import os
 import logging
 from flask import Flask, session
 from flask_session import Session
-from flask_compress import Compress
 import flask_cors
 from pymongo.errors import ConnectionFailure
 import atexit
@@ -33,9 +32,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config['SESSION_COOKIE_HTTPONLY'] = True       # Prevent JavaScript access
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'      # Mitigate CSRF, might need to be disapled in prod
 Session(app)
-
-compress = Compress()
-compress.init_app(app)
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -83,7 +79,7 @@ if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
-        # seed_database_if_empty()
+        seed_database_if_empty()
         TaskService(max_workers=3)
         # Check if running in development mode
         if os.getenv("FLASK_ENV", "development") == "development":
