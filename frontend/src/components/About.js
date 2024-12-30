@@ -43,18 +43,18 @@ const About = () => {
           <br />
           Regarding points, a person comming in first in an activity ranking, will get 10 points. The tenth person in that ranking will get 1 point. You can guess the rest.
           <br />
-          Imagine a person with a <Bold>first place in biking</Bold> a <Bold>fifth place in tennis</Bold> and a <Bold>third place in running</Bold>.
-          Their total points will be: <Bold>10 (biking) + 6 (tennis) + 8 (running) = 24</Bold>.
+          Imagine a person with a <Bold>first place in biking</Bold> a <Bold>fifth place in ball sports</Bold> and a <Bold>third place in running</Bold>.
+          Their total points will be: <Bold>10 (biking) + 6 (ball sports) + 8 (running) = 24</Bold>.
           <br />
-          In case there's a tie, the person with the higher value in overall moving time of all 3 categories wins the tiebreaker.
+          In case there's a tie, the person with the higher value in overall moving time of all 3 categories wins the tiebreaker. A notable exception to this is gym, where it's not total moving time but rather elapsed total time.
         </p>
 
         <h4>Accepted types of activities:</h4>
 
         <p>
-          <Bold>Bike</Bold>: (Mountainbike, Virtualbike, Gravelbike)<br />
-          <Bold>Run</Bold>: (Trailrun, Edgecase (Holleger Racewalk)<br />
-          <Bold>Hiking</Bold>: (Skitour, Hiking, Schneeschuhwandern)<br />
+          <Bold>Bike</Bold>: (Road bike, Mountainbike, Virtualbike, Gravelbike)<br />
+          <Bold>Run</Bold>: (Run, Trailrun, Edgecase (Holleger Racewalk))<br />
+          <Bold>Hiking</Bold>: (Skitour, Hiking, Snow shoeing)<br />
           <Bold>Alpine Snow Sports</Bold>: (Ski, Snowboard)<br />
           <Bold>Langlaufen / Inline</Bold>: (selbsterklärend)<br />
           <Bold>Gym</Bold>: (Weighted Training, HIIT, Training)<br />
@@ -83,6 +83,10 @@ const About = () => {
           The first place will get 40% of the total prize money, followed with 25% for the second place and so on.
           This means that only the first five places will get extra money at all. However, there will still be a great evening at the end of the year at a restaurant, which will likely be paid by the prizepool money. So, everybody has some sort of benefit at the end.
         </p>
+
+        <h4>ATTENTION</h4>
+
+        <p>In order for us to rightfully handle your activities, please make sure to upload your activity on the same day. For activities with an gpx file attached (visible map in strava), this doesn't apply.</p>
       </Container>
     </AboutContainer>
   );
