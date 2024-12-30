@@ -50,8 +50,20 @@ services:
       - backend
     networks:
       - strava-challange-network
-    env_file:
-      - ./.env
+
+  nginx:
+      image: nginx:latest
+      container_name: nginx
+      ports:
+        - "80:80" # Expose Nginx on port 80
+      depends_on:
+        - frontend
+        - backend
+      networks:
+        - strava-challange-network
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mount custom Nginx config
+        - nginx_cache:/var/cache/nginx # Persistent caching volume
 
 networks:
   strava-challange-network:
@@ -59,4 +71,5 @@ networks:
 
 volumes:
   mongo_data:
+  nginx_cache:
     # external: true # for prod in order to make volume more persistent

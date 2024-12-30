@@ -76,6 +76,8 @@ def process_strava_callback(code):
         logger.error(f"Activities endpoint test failed: {e}")
         raise ScopeError("Failed to verify activity access.")
 
+
+    logger.info(f"Activity response headers: {activities_response.headers}")
     # Construct Athlete instance
     athlete = Athlete(
         athlete_id=athlete_data["id"],

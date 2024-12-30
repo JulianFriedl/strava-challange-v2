@@ -19,8 +19,9 @@ EXPOSE 8080
 # Command for development (Flask development server)
 CMD ["python", "src/main.py"]
 
-# Uncomment the following lines for production
+# # Uncomment the following lines for production
 # # Set the environment for production
+# ENV PYTHONPATH=/app/src
 # ENV FLASK_ENV=production
 # # Use Gunicorn as the production WSGI server
-# CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "src.main:app"]
+# CMD ["gunicorn", "-w", "3", "-b", "0.0.0.0:8080", "--timeout", "15", "--preload", "src.main:app"]
