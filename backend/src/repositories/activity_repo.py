@@ -82,7 +82,17 @@ class ActivityRepository:
         except PyMongoError as e:
             raise Exception(f"Failed to list activities: {e}")
 
-    #TODO: For the challange it would probably be good to also filter by Year, maybe change the index for the collection too to include the Year
+    def find_activities_by_athlete_and_type_with_year2025(self, athlete_id: int, activity_type: str):
+        """
+        Find all Activities by AthleteID and Type for 2025.
+        """
+        try:
+            query = {"athlete_id": athlete_id, "type": activity_type, "year": 2025}
+            cursor = self.collection.find(query)
+            activities = [Activity.from_mongo(doc) for doc in cursor]
+            return activities
+        except PyMongoError as e:
+            raise Exception(f"Failed to find activities for athlete_id={athlete_id} and type={activity_type}: {e}")
     def find_activities_by_athlete_and_type(self, athlete_id: int, activity_type: str):
         """
         Find all Activities by AthleteID and Type.

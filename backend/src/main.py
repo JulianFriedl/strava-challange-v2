@@ -15,6 +15,7 @@ from services.core_services.task_service import TaskService
 from api.auth import auth_blueprint
 from api.map import map_blueprint
 from api.webhook import webhook_blueprint
+from api.leaderboard import leaderboard_blueprint
 from config.log_config import setup_logging
 
 app = Flask(__name__)
@@ -43,6 +44,7 @@ logger = logging.getLogger(__name__)
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 app.register_blueprint(map_blueprint, url_prefix='/api/map')
 app.register_blueprint(webhook_blueprint, url_prefix='/api/webhook')
+app.register_blueprint(leaderboard_blueprint, url_prefix='/api/leaderboard')
 
 
 def initialize_database():
