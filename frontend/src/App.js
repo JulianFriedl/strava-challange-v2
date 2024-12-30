@@ -5,6 +5,7 @@ import Map from './components/map/Map';
 import Login from './components/Login.js'
 import Header from './components/Header';
 import Overlay from './components/Overlay';
+import Leaderboard from './components/slider/Leaderboard.js'
 import { createGlobalStyle } from 'styled-components';
 import websitePalette from './styles/palette';
 import { API_BASE_URL } from './api';
