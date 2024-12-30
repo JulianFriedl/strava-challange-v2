@@ -43,7 +43,6 @@ const Login = ({ authState }) => {
         <LoggedInMessage>
           You are logged in as User {authState.userId}. Go to the <a href="/map">map</a> to explore your routes.
         </LoggedInMessage>
-        <About />
       </LoginContainer>
     );
   }
