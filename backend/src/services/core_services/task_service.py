@@ -33,7 +33,7 @@ class Task:
 class TaskService:
     _instance = None  # Singleton instance
 
-    def __new__(cls, max_workers=5):
+    def __new__(cls, max_workers=3):
         if cls._instance is None:
             cls._instance = super(TaskService, cls).__new__(cls)
             cls._instance.executor = ThreadPoolExecutor(max_workers=max_workers)

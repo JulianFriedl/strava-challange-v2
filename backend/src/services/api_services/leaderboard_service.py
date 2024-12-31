@@ -52,7 +52,7 @@ def get_all_athlete_activities():
     for t in mapped_types:
         if last_type == "":
             last_type = mapped_types[t]
-        
+
         for a in athletes:
             activities = activity_repo.find_activities_by_athlete_and_type_with_year2025(a.athlete_id, t)
             points = calc_total_time(activities, mapped_types[t])
@@ -68,10 +68,10 @@ def get_all_athlete_activities():
                 subtype.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": entry["points"] + points})
             else:
                 subtype.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": points})
-        
+
     subtype.sort(key=sort_func, reverse=True)
     all.append({"name": last_type, "rankings": subtype})
-            
+
     # add total ranking to list
     total = []
     for a in athletes:
@@ -86,10 +86,10 @@ def get_all_athlete_activities():
         for p in places:
             sum += 10 - (p - 1)
         total.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": sum})
-    
+
     total.sort(key=sort_func, reverse=True)
     all.append({"name": "Overall", "rankings": total})
-        
+
     return all
 
 def calc_total_time(activities, grouped_type):

@@ -19,7 +19,7 @@ from config.log_config import setup_logging
 
 app = Flask(__name__)
 
-flask_cors.CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:3000", "http://127.0.0.1:3000", "http://stravascape.site"]}})
+flask_cors.CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:3000", "http://127.0.0.1:3000", "http://stravascape.site", "http://scsport.eu"]}})
 
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'fallback-key-for-dev')
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     try:
         logger.info("Starting backend service...")
         db_instance = initialize_database()
-        seed_database_if_empty()
+        # seed_database_if_empty()
         TaskService(max_workers=3)
         # Check if running in development mode
         if os.getenv("FLASK_ENV", "development") == "development":

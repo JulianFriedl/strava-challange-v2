@@ -123,13 +123,24 @@ class ActivityRepository:
             query = {
                 "athlete_id": {"$in": athlete_ids},
                 "year": {"$in": years},
-                "summary_polyline": { "$ne": None}
+                "summary_polyline": { "$ne": None},
+                "type": {"$nin": ["VirtualRide", "VirtualRun"]},
             }
-            projection = {"_id": 0,
-                          "kudos": 0,
-                          "suffer_score": 0,
-                          "total_elevation_gain": 0,
-                          "start_date": 0}
+
+            projection = {
+                "_id": 0,
+                "kudos": 0,
+                "suffer_score": 0,
+                "total_elevation_gain": 0,
+                "start_date": 0,
+                "elapsed_time": 0,
+                "commute": 0,
+                "average_speed": 0,
+                "max_speed": 0,
+                "has_heartrate": 0,
+                "max_watts": 0,
+                "description": 0,
+                "calories": 0,}
 
             results = list(self.collection.find(query, projection))
             return results

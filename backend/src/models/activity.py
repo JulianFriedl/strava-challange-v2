@@ -42,6 +42,14 @@ class Activity:
         suffer_score: int,
         url: str,
         year: int,
+        elapsed_time: float = None,
+        commute: bool = None,
+        average_speed: float = None,
+        max_speed: float = None,
+        has_heartrate: bool = None,
+        max_watts: float = None,
+        description: str = None,
+        calories: float = None,
         polyline: GeoJSONLineString = None,
     ):
         self.activity_id = activity_id
@@ -57,6 +65,14 @@ class Activity:
         self.suffer_score = suffer_score
         self.url = url
         self.year = year
+        self.elapsed_time = elapsed_time
+        self.commute = commute
+        self.average_speed = average_speed
+        self.max_speed = max_speed
+        self.has_heartrate = has_heartrate
+        self.max_watts = max_watts
+        self.description = description
+        self.calories = calories
 
     @classmethod
     def from_mongo(cls, data):
@@ -77,6 +93,14 @@ class Activity:
             suffer_score=data["suffer_score"],
             url=data["url"],
             year=data["year"],
+            elapsed_time=data.get("elapsed_time"),
+            commute=data.get("commute"),
+            average_speed=data.get("average_speed"),
+            max_speed=data.get("max_speed"),
+            has_heartrate=data.get("has_heartrate"),
+            max_watts=data.get("max_watts"),
+            description=data.get("description"),
+            calories=data.get("calories"),
         )
 
     def to_mongo(self):
@@ -95,6 +119,14 @@ class Activity:
             "suffer_score": self.suffer_score,
             "url": self.url,
             "year": self.year,
+            "elapsed_time": self.elapsed_time,
+            "commute": self.commute,
+            "average_speed": self.average_speed,
+            "max_speed": self.max_speed,
+            "has_heartrate": self.has_heartrate,
+            "max_watts": self.max_watts,
+            "description": self.description,
+            "calories": self.calories,
         }
 
     @staticmethod
@@ -121,7 +153,7 @@ class Activity:
             activity_id=activity_id,
             athlete_id=athlete_id,
             name=activity_data.get("name", ""),
-            type=activity_data.get("type", "Unknown"),
+            type=activity_data.get("sport_type", "Unknown"),
             start_date=start_date,
             moving_time=activity_data.get("moving_time", 0) / 60,
             distance=activity_data.get("distance", 0) / 1000,
@@ -130,9 +162,18 @@ class Activity:
             suffer_score=activity_data.get("suffer_score", 0),
             url=f"https://www.strava.com/activities/{activity_id}",
             year=datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%SZ").year,
+            elapsed_time=activity_data.get("elapsed_time", 0),
+            commute=activity_data.get("commute", False),
+            average_speed=activity_data.get("average_speed", 0),
+            max_speed=activity_data.get("max_speed", 0),
+            has_heartrate=activity_data.get("has_heartrate", False),
+            max_watts=activity_data.get("max_watts", 0),
+            description=activity_data.get("description", ""),
+            calories=activity_data.get("calories", 0),
             polyline=GeoJSONLineString(
                 type="LineString",
                 coordinates=decoded_coordinates
             ) if decoded_coordinates else None,
+
         )
         return activity

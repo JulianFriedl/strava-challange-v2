@@ -17,6 +17,10 @@ const HeaderContainer = styled.header`
   z-index: 10;
   // position: fixed; /* Sticks to the top of the viewport */
   width: 100%;
+  overflow-x: auto; /* Enable horizontal scrolling if content overflows */
+  overflow-y: hidden; /* Prevent vertical scrollbars */
+  white-space: nowrap; /* Prevent wrapping of child elements */
+  min-height: 4.5rem;
 `;
 
 const LeftSection = styled.div`
@@ -26,7 +30,6 @@ const LeftSection = styled.div`
 `;
 
 const CenterSection = styled.nav`
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
