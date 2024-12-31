@@ -65,9 +65,12 @@ def get_all_athlete_activities():
             entry = next((x for x in subtype if x["name"] == a.username), [])
             if entry:
                 subtype.remove(entry)
-                subtype.append({"name": a.username, "points": entry["points"] + points})
+                subtype.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": entry["points"] + points})
             else:
-                subtype.append({"name": a.username, "points": points})
+                subtype.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": points})
+        
+    subtype.sort(key=sort_func, reverse=True)
+    all.append({"name": last_type, "rankings": subtype})
             
     # add total ranking to list
     total = []
@@ -82,7 +85,7 @@ def get_all_athlete_activities():
         sum = 0
         for p in places:
             sum += 10 - (p - 1)
-        total.append({"name": a.username, "points": sum})
+        total.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": sum})
     
     total.sort(key=sort_func, reverse=True)
     all.append({"name": "Overall", "rankings": total})
@@ -90,6 +93,10 @@ def get_all_athlete_activities():
     return all
 
 def calc_total_time(activities, grouped_type):
+    """
+    Function for calculating overall moving time in a specific category (grouped activities).
+    For Alpine Snow Sports it aggregates the total elevation loss.
+    """
     sum = 0
     for a in activities:
         if grouped_type == "Alpine Snow Sports":
@@ -100,4 +107,7 @@ def calc_total_time(activities, grouped_type):
     return sum
 
 def sort_func(e):
+  """
+  Sort function for points
+  """
   return e['points']
