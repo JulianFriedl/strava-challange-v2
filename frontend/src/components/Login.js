@@ -14,29 +14,31 @@ const LoginContainer = styled.div`
   background-color: ${websitePalette.background};
   color: ${websitePalette.text};
   text-align: center;
-  padding: 20px;
+  padding: clamp(15px, 5vw, 40px); /* Dynamic padding */
+  min-height: 100vh;
+  box-sizing: border-box;
 `;
 
 const Title = styled.h1`
-  font-size: clamp(2rem, 3vw, 40rem);
-  margin-bottom: 20px;
+  font-size: clamp(2rem, 8vw, 4rem); /* Responsive font size */
+  margin-bottom: clamp(20px, 5vw, 40px); /* Dynamic margin */
   color: ${websitePalette.primary};
 `;
 
 const Description = styled.p`
-  font-size: clamp(1rem, 1vw, 10rem);
-  margin-bottom: 40px;
+  font-size: clamp(1rem, 2vw, 1.5rem); /* Responsive font size */
+  margin-bottom: clamp(30px, 5vw, 40px); /* Dynamic margin */
   color: ${websitePalette.secondary};
 `;
 
 const ErrorMessage = styled.p`
   color: red;
-  margin: 20px 0;
+  margin: clamp(10px, 3vw, 20px) 0; /* Dynamic margin */
 `;
 
 const LoadingMessage = styled.p`
   color: ${websitePalette.secondary};
-  margin: 20px 0;
+  margin: clamp(10px, 3vw, 20px) 0; /* Dynamic margin */
 `;
 
 const Login = ({ authState }) => {
@@ -64,7 +66,7 @@ const Login = ({ authState }) => {
               ? ranking.points
               : category.name === 'Alpine Snow Sports'
                 ? `${ranking.points}m`
-                : `${(ranking.points / 60)}h`
+                : `${Math.floor(ranking.points / 60)}h ${Math.round(((ranking.points / 60) - Math.floor(ranking.points))*60)}min`
           }));
 
           // Return the transformed category
