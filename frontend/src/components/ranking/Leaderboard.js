@@ -5,6 +5,13 @@ const Container = styled.div`
   max-width: min(1200px, 90vw);
   margin: 0 auto;
   padding: clamp(12px, 2vw, 24px);
+  position: relative;
+  height: calc(var(--vh, 1vh) * 100);
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    overflow-y: auto;
+  }
 `;
 
 const Card = styled.div`
@@ -45,12 +52,12 @@ const List = styled.div`
   &::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 4px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 4px;

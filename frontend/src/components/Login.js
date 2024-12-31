@@ -15,8 +15,8 @@ const LoginContainer = styled.div`
   color: ${websitePalette.text};
   text-align: center;
   padding: clamp(15px, 5vw, 40px); /* Dynamic padding */
-  min-height: 100vh;
   box-sizing: border-box;
+  overflow: hidden; /* Prevent vertical scrollbars */
 `;
 
 const Title = styled.h1`
@@ -50,13 +50,13 @@ const Login = ({ authState }) => {
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       if (!authState.loggedIn) return;
-      
+
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const data = await apiRequest('/leaderboard');
-        
+
         // Separate and transform the categories
         const transformedCategories = data.leaderboard.map(category => {
           // Transform the rankings
@@ -77,7 +77,7 @@ const Login = ({ authState }) => {
         });
 
         // Find and set the Overall category
-        const overallCategory = transformedCategories.find(category => 
+        const overallCategory = transformedCategories.find(category =>
           category.name === 'Overall'
         );
         if (overallCategory) {
@@ -119,7 +119,7 @@ const Login = ({ authState }) => {
         <ErrorMessage>{error}</ErrorMessage>
       )}
       {!isLoading && !error && sportCategories && sportCategories.length > 0 && (
-        <RankingTab 
+        <RankingTab
           sportCategories={sportCategories}
           overallRankings={overallRankings}
         />
