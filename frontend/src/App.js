@@ -9,6 +9,7 @@ import { createGlobalStyle } from 'styled-components';
 import websitePalette from './styles/palette';
 import { API_BASE_URL } from './api';
 import About from './components/About.js';
+import Analytics from './components/analytics/Analytics.js'
 
 export const GlobalStyle = createGlobalStyle`
   *,
@@ -100,9 +101,10 @@ function App() {
         <AppContainer>
           <Header authState={authState} onLogout={handleLogout} />
           <Routes>
-            <Route path="/map" element={<Map authState={authState} />} />
             <Route path="/" element={<Login authState={authState} />} />
+            <Route path="/map" element={<Map authState={authState} />} />
             <Route path="/about" element={<About />} />
+            <Route path="/analytics/*" element={<Analytics authState={authState}/>}/>
           </Routes>
           <Overlay />
         </AppContainer>
