@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import StravaButton from './StravaButton';
 import websitePalette from '../styles/palette';
 import About from './About';
 import RankingTab from './ranking/Leaderboard.js';
 import { apiRequest } from '../api.js';
+
+const LandingPageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: ${websitePalette.background};
+  color: ${websitePalette.text};
+  text-align: center;
+  padding: clamp(15px, 5vw, 40px); /* Dynamic padding */
+`;
 
 const LoginContainer = styled.div`
   display: flex;
@@ -16,7 +26,7 @@ const LoginContainer = styled.div`
   text-align: center;
   padding: clamp(15px, 5vw, 40px); /* Dynamic padding */
   box-sizing: border-box;
-  overflow: hidden; /* Prevent vertical scrollbars */
+  overflow: hidden;
 `;
 
 const Title = styled.h1`
@@ -100,11 +110,11 @@ const Login = ({ authState }) => {
   // Render login screen for non-authenticated users
   if (!authState.loggedIn) {
     return (
-      <LoginContainer>
+      <LandingPageContainer>
         <Title>Welcome</Title>
         <Description>Log in to explore your routes, stats, and more!</Description>
         <About />
-      </LoginContainer>
+      </LandingPageContainer>
     );
   }
 

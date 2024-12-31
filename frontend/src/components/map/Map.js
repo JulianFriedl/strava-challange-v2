@@ -79,12 +79,9 @@ const MapContainer = styled.div`
   border-radius: 40px;
   overflow: hidden;
 
-  // @media (max-width: 1000px) {
-  //   margin: 0;
-  //   height: 100vh;
-  //   width: 100vw;
-  //   border-radius: 0px;
-  // }
+  @media (max-width: 1000px) {
+    width: 100vw;
+  }
 `;
 
 const SettingsButton = styled.button`
