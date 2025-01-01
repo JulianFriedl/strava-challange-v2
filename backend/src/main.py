@@ -81,7 +81,6 @@ if __name__ == "__main__":
         db_instance = initialize_database()
         # seed_database_if_empty()
         TaskService(max_workers=3)
-        # Check if running in development mode
         if os.getenv("FLASK_ENV", "development") == "development":
             logger.info("Running Flask development server...")
             app.run(host="0.0.0.0", port=8080)
@@ -90,4 +89,3 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error("Service failed to start: %s", e)
         exit(1)
-

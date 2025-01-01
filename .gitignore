@@ -9,6 +9,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+dump.archive
+
+./backend/src/data
+
 # C extensions
 *.so
 

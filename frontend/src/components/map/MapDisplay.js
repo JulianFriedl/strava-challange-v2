@@ -104,7 +104,7 @@ export default function MapDisplay({ years, selectedAthletes, onLoadComplete}) {
         return () => {
             cancelDrawingRef.current = true;
         };
-    }, [years, selectedAthletes]);
+    }, [years, selectedAthletes, onLoadComplete]);
 
     return <StyledMap id="map" />;
 }

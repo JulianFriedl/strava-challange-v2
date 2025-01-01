@@ -13,7 +13,6 @@ STRAVA_CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
 STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRETE")
 STRAVA_REDIRECT_URI = os.getenv("STRAVA_REDIRECT_URI")
 
-athlete_repo = AthleteRepository()
 
 
 def handle_strava_auth():
@@ -28,7 +27,7 @@ def handle_strava_auth():
         "scope": "read,activity:read",
     }
     strava_auth_url = f"https://www.strava.com/oauth/authorize?{requests.compat.urlencode(params)}"
-    logger.info(f"Generated Strava auth URL: {strava_auth_url}")
+    logger.debug(f"Generated Strava auth URL: {strava_auth_url}")
     return strava_auth_url
 
 
@@ -36,8 +35,9 @@ def process_strava_callback(code):
     """
     Exchange code for access token, retrieve athlete data, and save or retrieve the athlete.
     """
-    logger.info(f"Processing Strava callback for code: {code}")
+    logger.debug(f"Processing Strava callback for code: {code}")
 
+    athlete_repo = AthleteRepository()
     # Exchange authorization code for access token
     try:
         token_response = requests.post(
@@ -77,7 +77,7 @@ def process_strava_callback(code):
         raise ScopeError("Failed to verify activity access.")
 
 
-    logger.info(f"Activity response headers: {activities_response.headers}")
+    logger.debug(f"Activity response headers: {activities_response.headers}")
     # Construct Athlete instance
     athlete = Athlete(
         athlete_id=athlete_data["id"],

@@ -4,13 +4,13 @@ from repositories.activity_repo import ActivityRepository
 
 logger = logging.getLogger(__name__)
 
-athlete_repo = AthleteRepository()
-activity_repo = ActivityRepository()
 
 def get_all_athlete_activities():
     """
     Fetch all activities from athlete and return aggregated result.
     """
+    athlete_repo = AthleteRepository()
+    activity_repo = ActivityRepository()
     logger.info("Fetching all athletes.")
     athletes = athlete_repo.get_all_athletes()
     grouped_types = ["Bike", "Run", "Hiking", "Alpine Snow Sports", "Nordic Ski / Inline", "Gym", "Ball Sports", "Climbing", "Water Sports"]

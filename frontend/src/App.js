@@ -30,6 +30,7 @@ export const GlobalStyle = createGlobalStyle`
   .full-height {
     height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height */
   }
+
 `;
 
 const AppContainer = styled.div`

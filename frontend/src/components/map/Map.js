@@ -5,16 +5,24 @@ import SettingsPanel from './SettingsPanel';
 import styled, { keyframes, css } from 'styled-components';
 import websitePalette from '../../styles/palette';
 import { apiRequest } from '../../api';
+
 const colors = [
-  '#f72585',
-  '#7209b7',
-  '#3a0ca3',
-  '#4361ee',
-  '#4cc9f0',
-  '#ff5400',
-  '#ff8900',
-  '#affc41',
-  '#b2ff9e'
+  '#7209b7', // Deep Purple
+  '#f72585', // Vibrant Pink
+  '#4361ee', // Vivid Blue
+  '#ff5400', // Bright Orange
+  '#ff8900', // Orange-Yellow
+  '#06d6a0', // Mint Green
+  '#073b4c', // Dark Teal
+  '#d00000', // Scarlet Red
+  '#48cae4', // Light Cyan
+  '#9b5de5', // Soft Lavender
+  '#3a0ca3', // Indigo
+  '#ff6f61', // Coral
+  '#ef476f', // Watermelon Red
+  '#b5179e', // Magenta
+  '#0081a7',
+  '#5e5d73',
 ];
 
 const rotate = keyframes`
@@ -87,7 +95,7 @@ const MapContainer = styled.div`
 const SettingsButton = styled.button`
   position: absolute;
   top: 30px;
-  right: ${({ $isOpen }) => $isOpen ? `clamp(320px, 16vw, 1210px)` : `clamp(10px, 1vw, 40px)`};
+  right: ${({ $isOpen }) => $isOpen ? `clamp(260px, 16vw, 1210px)` : `clamp(10px, 1vw, 40px)`};
   z-index: 1200;
   background-color: ${({ $isOpen }) => $isOpen ? '#5b5ea6' : websitePalette.secondary};
   color: ${({ $isOpen }) => $isOpen ? websitePalette.accent : websitePalette.text};
@@ -188,9 +196,9 @@ useEffect(() => {
       setSelectedAthletes(selectedAthleteDetails);
   };
 
-  const handleMapLoadComplete = () => {
+  const handleMapLoadComplete = React.useCallback(() => {
     setIsLoading(false);
-  };
+  }, []);
 
   const toggleSettings = () => {
     setIsSettingsOpen(!isSettingsOpen);
@@ -203,13 +211,13 @@ useEffect(() => {
       <SettingsButton $isOpen={isSettingsOpen} $isFirstRender={isFirstRender} $hasInteracted={hasInteracted} onClick={toggleSettings}>
         {'<'}
       </SettingsButton>
-        <SettingsPanel
-          onSettingsChange={handleSettingsChange}
-          availableAthletes={availableAthletes}
-          availableYears={availableYears}
-          $isOpen={isSettingsOpen}
-        />
-    </MapContainer>
+      <SettingsPanel
+        onSettingsChange={handleSettingsChange}
+        availableAthletes={availableAthletes}
+        availableYears={availableYears}
+        $isOpen={isSettingsOpen}
+      />
+  </MapContainer>
   );
 }
 

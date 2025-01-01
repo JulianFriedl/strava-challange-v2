@@ -30,6 +30,10 @@ class Task:
     task_type: TaskType
 
 
+# TODO: Revisit TaskService singleton implementation.
+# Currently using a single Gunicorn process with multiple threads to ensure shared state.
+# Consider implementing a centralized task queue (e.g., Redis, RabbitMQ), or implement it
+# as a seperate Microservice for scalability and true singleton behavior across processes.
 class TaskService:
     _instance = None  # Singleton instance
 

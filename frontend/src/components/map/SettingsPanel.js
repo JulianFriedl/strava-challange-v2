@@ -10,7 +10,7 @@ const StyledSettingsPanel = styled.div`
   top: 0;
   right: ${({ $isOpen }) => $isOpen ? '0' : '-100%'};
   bottom: 0;
-  width: clamp(300px, 15vw, 1200px);
+  width: clamp(250px, 15vw, 1200px);
   background-color: ${websitePalette.foreground};
   box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
   z-index: 1100;
@@ -28,7 +28,7 @@ const StyledSettingsPanel = styled.div`
 `;
 
 const StyledScrollableForm = styled.form`
-  flex: 1; // Takes all available space
+  flex: 1;
   overflow-y: auto; // Makes it scrollable
 `;
 
@@ -39,9 +39,6 @@ const StyledFormGroup = styled.div`
   padding: clamp(1rem, 0.8vw, 4rem);
   border: clamp(0.15rem, 0.12vw, 1rem) solid black;
   border-radius: 40px;
-  // @media (max-width: 1000px) { // for tablets
-  //   border-radius: 0;
-  // }
 
 `;
 
