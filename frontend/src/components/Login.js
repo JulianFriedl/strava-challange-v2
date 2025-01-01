@@ -70,14 +70,24 @@ const Login = ({ authState }) => {
         // Separate and transform the categories
         const transformedCategories = data.leaderboard.map(category => {
           // Transform the rankings
-          const transformedRankings = category.rankings.map(ranking => ({
-            ...ranking,
-            points: category.name === 'Overall'
-              ? ranking.points
-              : category.name === 'Alpine Snow Sports'
-                ? `${ranking.points}m`
-                : `${Math.floor(ranking.points / 60)}h ${Math.round(((ranking.points / 60) - Math.floor(ranking.points))*60)}min`
-          }));
+          const transformedRankings = category.rankings.map(ranking => {
+            let points;
+          
+            if (category.name === 'Overall') {
+              points = ranking.points;
+            } else if (category.name === 'Alpine Snow Sports') {
+              points = `${ranking.points}m`;
+            } else {
+              const hours = Math.floor(ranking.points / 60);
+              const minutes = Math.round(ranking.points % 60);
+              points = `${hours}h ${minutes}m`;
+            }
+          
+            return {
+              ...ranking,
+              points
+            };
+          });
 
           // Return the transformed category
           return {
