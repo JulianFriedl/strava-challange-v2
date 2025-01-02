@@ -17,11 +17,14 @@ from api.webhook import webhook_blueprint
 from api.leaderboard import leaderboard_blueprint
 from config.log_config import setup_logging
 
+setup_logging()
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 
 flask_cors.CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:3000", "http://127.0.0.1:3000", "http://stravascape.site", "http://scsport.eu"]}})
 
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'fallback-key-for-dev')
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRETE_KEY', 'fallback-key-for-dev')
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(weeks=2)
 app.config["SESSION_PERMANENT"] = True
@@ -32,9 +35,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config['SESSION_COOKIE_HTTPONLY'] = True       # Prevent JavaScript access
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'      # Mitigate CSRF, might need to be disapled in prod
 Session(app)
-
-setup_logging()
-logger = logging.getLogger(__name__)
 
 # Register blueprints
 app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
