@@ -16,7 +16,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: ./backend/Dockerfile.backend
+      dockerfile: ./backend/Dockerfile.prod.backend
     container_name: backend
     ports:
       - "8080:8080"
@@ -27,22 +27,10 @@ services:
     env_file:
       - ./.env
 
-  tests:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile.backend
-    command: pytest src/tests/
-    depends_on:
-      - mongo
-    networks:
-      - strava-challange-network
-    profiles: # excecutes only when "docker compose --profile test up tests"
-      - test
-
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile.prod.frontend
     container_name: frontend
     ports:
       - "5000:5000"
@@ -74,4 +62,4 @@ networks:
 volumes:
   mongo_data:
   nginx_cache:
-    # external: true # for prod in order to make volume more persistent
+    external: true # for prod in order to make volume more persistent

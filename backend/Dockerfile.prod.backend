@@ -1,0 +1,22 @@
+# Use an official Python runtime as the base image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+COPY ./backend/requirements.prod.txt /app/
+
+# Install dependencies
+RUN pip install -r requirements.prod.txt
+
+# Copy the source code into the container
+COPY ./backend /app
+
+# Expose the application port
+EXPOSE 8080
+
+# Set the environment for production
+ENV PYTHONPATH=/app/src
+ENV FLASK_ENV=production
+# Use Gunicorn as the production WSGI server
+CMD ["gunicorn", "-w", "1", "--threads", "3", "-b", "0.0.0.0:8080", "--timeout", "15", "--preload", "src.main:app"]

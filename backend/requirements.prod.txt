@@ -5,11 +5,7 @@ gunicorn
 flask-cors
 pymongo
 python-dotenv
-pytest
-mock
 polyline
 requests
 orjson
-flask-compress
 colorlog
-freezegun

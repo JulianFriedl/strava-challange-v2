@@ -4,6 +4,9 @@ import queue
 from dataclasses import dataclass
 import logging
 from enum import Enum
+from datetime import datetime, timedelta
+import threading
+import heapq
 
 from services.core_services.fetch_athlete_activities import fetch_athlete_activities
 from services.core_services.handle_updated_activity import handle_updated_activity
@@ -28,6 +31,7 @@ class Task:
     endpoint: str
     params: dict
     task_type: TaskType
+    execute_after: datetime = None
 
 
 # TODO: Revisit TaskService singleton implementation.
@@ -41,25 +45,57 @@ class TaskService:
         if cls._instance is None:
             cls._instance = super(TaskService, cls).__new__(cls)
             cls._instance.executor = ThreadPoolExecutor(max_workers=max_workers)
-            cls._instance.task_queue = queue.Queue()
+            cls._instance.task_queue = []
+            cls._instance.queue_lock = threading.Lock()  # Protect task_queue
+            cls._instance.active_timer = None  # Track the active timer for scheduling
             logger.info("ApiRequestService initialized with %d workers.", max_workers)
         return cls._instance
 
     def submit_task(self, task: Task):
+        execute_after = task.execute_after or datetime.now()
+
         logger.info(
-            "Submitting task - Athlete_id: %s Endpoint: %s, Params: %s, Task Type: %s",
+            "Submitting task - Athlete_id: %s Endpoint: %s, Params: %s, Task Type: %s, Execute After: %s",
             task.athlete_id,
             task.endpoint,
             task.params,
-            task.task_type.value
+            task.task_type.value,
+            execute_after,
         )
 
-        if not isinstance(task.task_type, TaskType):
-            logger.error(f"Invalid task type: {task.task_type}")
-            return
-
-        self.executor.submit(self.process_task, task)
+        with self.queue_lock:
+            execute_after = task.execute_after or datetime.now()
+            # heapq sorts the task_queue by its execute_after
+            # it sorts based on the first element of the tuple
+            heapq.heappush(self.task_queue, (execute_after, task))
+        self.executor.submit(self.process_queue)
         logger.info("Task submitted successfully.")
+
+    def process_queue(self):
+        while True:
+            with self.queue_lock:
+                if not self.task_queue:
+                    return
+
+                execute_after, task = heapq.heappop(self.task_queue)
+                now = datetime.now()
+
+                if execute_after > now:
+                    # Requeue the task and sleep until the next execution time
+                    heapq.heappush(self.task_queue, (execute_after, task))
+                    delay = (execute_after - now).total_seconds()
+                    logger.info(
+                        "Task requeued - Athlete_id: %s, Task Type: %s, Execute After: %s, Delay: %.2f seconds",
+                        task.athlete_id,
+                        task.task_type.value,
+                        execute_after,
+                        delay,
+                    )
+                    threading.Timer(delay, self.process_queue).start()
+                    return  # return since there are no tasks that can be exec before execute_after
+
+            # Process the task outside the lock
+            self.process_task(task)
 
     @retry(
         stop=stop_after_attempt(3),

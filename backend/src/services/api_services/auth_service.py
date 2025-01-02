@@ -35,7 +35,7 @@ def process_strava_callback(code):
     """
     Exchange code for access token, retrieve athlete data, and save or retrieve the athlete.
     """
-    logger.debug(f"Processing Strava callback for code: {code}")
+    logger.debug(f"Processing Strava callback for code: {code}, {STRAVA_CLIENT_ID}, {STRAVA_CLIENT_SECRET}")
 
     athlete_repo = AthleteRepository()
     # Exchange authorization code for access token

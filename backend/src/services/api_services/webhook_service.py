@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta
 
 from services.core_services.task_service import TaskService, TaskType, Task
 from api.exceptions import ParamError
@@ -23,6 +24,8 @@ def process_event(event):
                     endpoint="activity/create",
                     params={"activity_id": object_id},
                     task_type=TaskType.HANDLE_NEW_ACTIVITY,
+                    execute_after=datetime.now() + timedelta(seconds=5)
+
                 )
             )
         elif aspect_type == "update":

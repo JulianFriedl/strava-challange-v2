@@ -22,8 +22,22 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-flask_cors.CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:3000", "http://127.0.0.1:3000", "http://stravascape.site", "http://scsport.eu"]}})
-
+flask_cors.CORS(
+    app,
+    supports_credentials=True,
+    resources={
+        r"/api/*": {
+            "origins": [
+                "http://localhost:5000",
+                "http://127.0.0.1:5000",
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "https://www.scsport.eu",
+                "https://scsport.eu"
+            ]
+        }
+    }
+)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRETE_KEY', 'fallback-key-for-dev')
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(weeks=2)
