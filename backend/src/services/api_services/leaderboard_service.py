@@ -12,8 +12,8 @@ def get_all_athlete_activities():
     Fetch all activities from athlete and return aggregated result.
     """
     logger.info("Fetching all athletes.")
+    
     athletes = athlete_repo.get_all_athletes()
-    grouped_types = ["Bike", "Run", "Hiking", "Alpine Snow Sports", "Nordic Ski / Inline", "Gym", "Ball Sports", "Climbing", "Water Sports"]
     mapped_types = {
         "Ride": "Bike",
         "VirtualRide": "Bike",
@@ -62,12 +62,12 @@ def get_all_athlete_activities():
                 subtype = []
                 last_type = mapped_types[t]
 
-            entry = next((x for x in subtype if x["name"] == a.username), [])
+            entry = next((x for x in subtype if x["username"] == a.username), [])
             if entry:
                 subtype.remove(entry)
-                subtype.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": entry["points"] + points})
+                subtype.append({"username": a.username, "name": a.first_name + " " + a.last_name, "points": entry["points"] + points})
             else:
-                subtype.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": points})
+                subtype.append({"username": a.username, "name": a.first_name + " " + a.last_name, "points": points})
 
     subtype.sort(key=sort_func, reverse=True)
     all.append({"name": last_type, "rankings": subtype})
@@ -77,15 +77,17 @@ def get_all_athlete_activities():
     for a in athletes:
         places = []
         for category in all:
-            indices = [x for x in category["rankings"] if x["name"] == a.username]
+            indices = [x for x in category["rankings"] if x["username"] == a.username]
             if indices[0]["points"] != 0:
                 places.insert(0, category["rankings"].index(indices[0]))
         places.sort()
 
         sum = 0
-        for p in places:
-            sum += 10 - (p - 1)
-        total.append({"name": a.username, "firstname": a.first_name, "lastname": a.last_name, "points": sum})
+        for i in range(3):
+            if i == len(places):
+                break
+            sum += 10 - places[i]
+        total.append({"username": a.username, "name": a.first_name + " " + a.last_name, "points": sum})
 
     total.sort(key=sort_func, reverse=True)
     all.append({"name": "Overall", "rankings": total})
