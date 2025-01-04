@@ -87,7 +87,7 @@ class ActivityRepository:
         Find all Activities by AthleteID and Type for 2025.
         """
         try:
-            query = {"athlete_id": athlete_id, "type": activity_type, "year": 2024}
+            query = {"athlete_id": athlete_id, "type": activity_type, "year": 2025}
             cursor = self.collection.find(query)
             activities = [Activity.from_mongo(doc) for doc in cursor]
             return activities
