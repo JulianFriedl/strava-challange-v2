@@ -61,7 +61,7 @@ def process_strava_callback(code):
             logger.error(f"Token exchange request: {token_response.request.body}")
             logger.error(f"Token exchange response: {token_response.status_code}, {token_response.text}")
             if attempt < 2:
-                time.sleep(1)  # Backoff
+                time.sleep(1 + attempt)  # Backoff
             else:
                 raise AuthorizationError("Failed to exchange authorization code for token.")
 
