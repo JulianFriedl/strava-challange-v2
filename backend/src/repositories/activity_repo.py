@@ -87,7 +87,7 @@ class ActivityRepository:
         Find all Activities by AthleteID and Type for 2025.
         """
         try:
-            query = {"athlete_id": athlete_id, "type": activity_type, "year": 2025}
+            query = {"athlete_id": athlete_id, "type": activity_type, "year": 2024}
             cursor = self.collection.find(query)
             activities = [Activity.from_mongo(doc) for doc in cursor]
             return activities
@@ -142,7 +142,9 @@ class ActivityRepository:
                 "description": 0,
                 "calories": 0,}
 
-            results = list(self.collection.find(query, projection))
+            results = list(
+                self.collection.find(query, projection).sort("athlete_id", -1)
+            )
             return results
         except PyMongoError as e:
             logger.error(f"Failed to list activities with polylines: {e}")
@@ -156,6 +158,6 @@ class ActivityRepository:
             result = self.collection.delete_many({"athlete_id": athlete_id})
 
             logger.info(f"Deleted {result.deleted_count} activities for athlete ID {athlete_id}.")
-            return result.deleted_count
+            return result.deleted_countactivity
         except PyMongoError as e:
             raise Exception(f"Error deleting activities for athlete ID {athlete_id}.") from e

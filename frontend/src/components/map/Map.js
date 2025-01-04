@@ -16,11 +16,10 @@ const colors = [
   '#073b4c', // Dark Teal
   '#d00000', // Scarlet Red
   '#48cae4', // Light Cyan
-  '#9b5de5', // Soft Lavender
-  '#3a0ca3', // Indigo
-  '#ff6f61', // Coral
-  '#ef476f', // Watermelon Red
   '#b5179e', // Magenta
+  '#630146',
+  '#002e07',
+  '#3a0ca3', // Indigo
   '#0081a7',
   '#5e5d73',
 ];

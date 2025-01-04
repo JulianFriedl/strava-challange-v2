@@ -81,7 +81,7 @@ export default function MapDisplay({ years, selectedAthletes, onLoadComplete}) {
                 if (data) {
                     cancelDrawingRef.current = false;
                     setRoutesData(data || []);
-                    await displayRoutes(
+                    displayRoutes(
                         data,
                         mapRef.current,
                         selectedAthletes,
@@ -120,7 +120,7 @@ const displayRoutes = (data, map, selectedAthletes, highlightedRoutesGroup, isZo
     highlightedRoutesGroup.clearLayers();
 
     let allBounds = [];
-    const batchSize = 20;
+    const batchSize = 60;
     let index = 0;
 
     const processNextBatch = () => {
