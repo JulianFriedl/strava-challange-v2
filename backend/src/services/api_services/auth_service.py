@@ -1,6 +1,7 @@
 import logging
 import requests
 import os
+import time
 
 from models.athlete import Athlete
 from repositories.athlete_repo import AthleteRepository
@@ -23,7 +24,7 @@ def handle_strava_auth():
         "client_id": STRAVA_CLIENT_ID,
         "response_type": "code",
         "redirect_uri": STRAVA_REDIRECT_URI,
-        "approval_prompt": "force",
+        "approval_prompt": "auto",
         "scope": "read,activity:read",
     }
     strava_auth_url = f"https://www.strava.com/oauth/authorize?{requests.compat.urlencode(params)}"
@@ -35,49 +36,39 @@ def process_strava_callback(code):
     """
     Exchange code for access token, retrieve athlete data, and save or retrieve the athlete.
     """
-    logger.debug(f"Processing Strava callback for code: {code}, {STRAVA_CLIENT_ID}, {STRAVA_CLIENT_SECRET}")
+    logger.debug(f"Processing Strava callback for code: {code}")
 
     athlete_repo = AthleteRepository()
     # Exchange authorization code for access token
-    try:
-        token_response = requests.post(
-            "https://www.strava.com/oauth/token",
-            data={
-                "client_id": STRAVA_CLIENT_ID,
-                "client_secret": STRAVA_CLIENT_SECRET,
-                "code": code,
-                "grant_type": "authorization_code",
-            },
-            timeout=10,
-        )
-        token_response.raise_for_status()
-        token_data = token_response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Token exchange failed: {e}")
-        raise AuthorizationError("Failed to exchange authorization code for token.")
-    except ValueError:
-        logger.error("Invalid token response format.")
-        raise AuthorizationError("Invalid token response format.")
+    for attempt in range(3):
+        try:
+            token_response = requests.post(
+                "https://www.strava.com/oauth/token",
+                data={
+                    "client_id": STRAVA_CLIENT_ID,
+                    "client_secret": STRAVA_CLIENT_SECRET,
+                    "code": code,
+                    "grant_type": "authorization_code",
+                },
+                timeout=10,
+            )
+            token_response.raise_for_status()
+            token_data = token_response.json()
+            break  # Exit loop on success
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Token exchange failed on attempt {attempt + 1}: {e}")
+            logger.error(f"Env variables: CLIENT_ID={STRAVA_CLIENT_ID}, CLIENT_SECRET={STRAVA_CLIENT_SECRET}, REDIRECT_URI={STRAVA_REDIRECT_URI}")
+            logger.error(f"Token exchange request: {token_response.request.body}")
+            logger.error(f"Token exchange response: {token_response.status_code}, {token_response.text}")
+            if attempt < 2:
+                time.sleep(1)  # Backoff
+            else:
+                raise AuthorizationError("Failed to exchange authorization code for token.")
 
+    logger.info(f"Token exchange suceeded after {attempt + 1} tries.")
     access_token = token_data["access_token"]
     athlete_data = token_data["athlete"]
 
-    # Test access to the activities endpoint
-    try:
-        headers = {"Authorization": f"Bearer {access_token}"}
-        activities_response = requests.get(
-            "https://www.strava.com/api/v3/athlete/activities", headers=headers, timeout=10
-        )
-        if activities_response.status_code != 200:
-            logger.error(f"Activities endpoint access failed: {activities_response.text}")
-            raise ScopeError("User did not grant the required 'activity:read' scope.")
-        logger.info("User granted activity access.")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Activities endpoint test failed: {e}")
-        raise ScopeError("Failed to verify activity access.")
-
-
-    logger.debug(f"Activity response headers: {activities_response.headers}")
     # Construct Athlete instance
     athlete = Athlete(
         athlete_id=athlete_data["id"],

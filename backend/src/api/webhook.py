@@ -23,7 +23,7 @@ def handle_subscription_verification(req):
     verify_token = req.args.get('hub.verify_token')
     logger.info(f"Subscription verification received. challenge:{challenge}, verify_token:{verify_token}.")
     if challenge and verify_token == VERIFY_TOKEN:
-        logger.info("Subscription verification received.")
+        logger.info("Subscription verification accepted.")
         return jsonify({'hub.challenge': challenge}), 200
     else:
         logger.warning("Subscription verification failed.")

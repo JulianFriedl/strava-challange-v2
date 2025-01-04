@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import threading
 import heapq
 
+from api.exceptions import RateLimitExceededException
+
 from services.core_services.fetch_athlete_activities import fetch_athlete_activities
 from services.core_services.handle_updated_activity import handle_updated_activity
 from services.core_services.handle_updated_athlete import handle_updated_athlete
@@ -71,6 +73,12 @@ class TaskService:
         self.executor.submit(self.process_queue)
         logger.info("Task submitted successfully.")
 
+    # TODO: simplify design pattern. Currently:
+    # Requeue the task and sleep until the next execution time
+    # This design leverages a mix of a loop (to process all ready tasks)
+    # and a timer (to wait for future tasks without busy-waiting).
+    # It's somewhat complex because we combine immediate execution
+    # and delayed scheduling in the same flow.
     def process_queue(self):
         while True:
             with self.queue_lock:
@@ -108,11 +116,6 @@ class TaskService:
             f"Failed after attempt {retry_state.attempt_number}: {retry_state.outcome.exception()}"
         ),
     )
-    #TODO: handle the case where all workers are blocked because of RatelimitTracker
-    # and a non rate limited tasks execution gets blocked because the other workers
-    # are waiting on the RatelimitTracker.
-    # possible requeue task execution instead of sleeping in RatelimitTracker, and
-    # then check in process task if the ratelimit has been reset yet before re-executing
     def process_task(self, task: Task):
         logger.info("Processing task - %s", task)
         try:
@@ -155,6 +158,11 @@ class TaskService:
 
             else:
                 logger.warning(f"Unhandled task type: {task.task_type}")
+        except RateLimitExceededException as e:
+            logger.warning(f"Requeuing task due to rate limit: Athlete_id={task.athlete_id}, Delay={e.delay:.2f} seconds")
+            # Requeue the task with the delay as the new execute_after time
+            task.execute_after = datetime.now() + timedelta(seconds=e.delay)
+            self.submit_task(task)
         except Exception as e:
             logger.error("Error processing task: %s", str(e))
             raise

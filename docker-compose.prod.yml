@@ -48,6 +48,7 @@ services:
     volumes:
       - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/lib/nginx/html:/var/lib/nginx/html:ro # Mount the ACME challenge directory
       - nginx_cache:/var/cache/nginx # Persistent caching volume
     depends_on:
       - frontend
@@ -61,5 +62,5 @@ networks:
 
 volumes:
   mongo_data:
-  nginx_cache:
     external: true # for prod in order to make volume more persistent
+  nginx_cache:

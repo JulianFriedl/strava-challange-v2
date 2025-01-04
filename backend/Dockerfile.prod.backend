@@ -17,6 +17,5 @@ EXPOSE 8080
 
 # Set the environment for production
 ENV PYTHONPATH=/app/src
-ENV FLASK_ENV=production
 # Use Gunicorn as the production WSGI server
 CMD ["gunicorn", "-w", "1", "--threads", "3", "-b", "0.0.0.0:8080", "--timeout", "15", "--preload", "src.main:app"]

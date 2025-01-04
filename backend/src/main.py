@@ -83,23 +83,11 @@ def seed_database_if_empty():
         logger.info("Database already contains data. Skipping seeding.")
 
 
-@atexit.register
-def shutdown_worker():
-    logger.info("Shutting down ApiRequestService at application exit.")
-    TaskService.shutdown()
-
-
 if __name__ == "__main__":
     try:
-        logger.info("Starting backend service...")
-        db_instance = initialize_database()
-        # seed_database_if_empty()
-        TaskService(max_workers=3)
-        if os.getenv("FLASK_ENV", "development") == "development":
-            logger.info("Running Flask development server...")
-            app.run(host="0.0.0.0", port=8080)
-        else:
-            logger.info("Running in production mode.")
+        logger.info("Running Flask development server...")
+        app.run(host="0.0.0.0", port=8080)
+        logger.info("Running in production mode.")
     except Exception as e:
         logger.error("Service failed to start: %s", e)
         exit(1)

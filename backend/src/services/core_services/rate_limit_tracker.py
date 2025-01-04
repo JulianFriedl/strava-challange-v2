@@ -3,6 +3,8 @@ import threading
 import time
 import logging
 
+from api.exceptions import RateLimitExceededException
+
 logger = logging.getLogger(__name__)
 
 # TODO: currently the rate limit tracker only tracks the read limit, but the
@@ -69,4 +71,4 @@ class RateLimitTracker:
             if sleep_time_15_min > 0 or sleep_time_daily > 0:
                 sleep_time = max(sleep_time_15_min, sleep_time_daily)
                 logger.warning(f"Rate limit reached. Pausing for {sleep_time:.2f} seconds.")
-                time.sleep(sleep_time)
+                raise RateLimitExceededException(delay=sleep_time)

@@ -28,10 +28,20 @@ def strava_auth_callback():
     """
     Handle the Strava authorization callback.
     """
-    logger.info("Strava_auth_callback called.")
     code = request.args.get("code")
+    scope = request.args.get("scope")
+    logger.info(f"Strava_auth_callback called. Code: {code}, scope: {scope}")
+
+    scope_necassary = {"read", "activity:read"}
+
     if not code:
         return jsonify({"error": "Missing authorization code"}), 400
+
+    granted_scope = set(scope.split(","))
+
+    if not scope_necassary.issubset(granted_scope):
+        logger.error(f"Authorization error: scope mismatch. Required: {scope_necassary}, Granted: {granted_scope}")
+        return jsonify("User did not grant the required 'activity:read' scope."), 403
 
     try:
         athlete_data = process_strava_callback(code)
@@ -40,9 +50,6 @@ def strava_auth_callback():
         return redirect(os.getenv("FRONTEND_URL", "http://localhost:5000/"))
     except AuthorizationError as e:
         logger.error(f"Authorization error: {str(e)}")
-        return jsonify({"error": str(e)}), e.status_code
-    except ScopeError as e:
-        logger.error(f"Scope error: {str(e)}")
         return jsonify({"error": str(e)}), e.status_code
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
@@ -53,6 +60,7 @@ def strava_auth_callback():
 def auth_status():
     user_id = session.get("user_id")
     if user_id:
+        logger.info(f"User {user_id} already logged in.")
         return jsonify({"logged_in": True, "user_id": user_id})
     return jsonify({"logged_in": False}), 401
 
