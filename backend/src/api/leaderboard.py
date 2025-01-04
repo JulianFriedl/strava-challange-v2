@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify, request, redirect, session
 import logging
-import os
 
-from services.api_services.leaderboard_service import get_all_athlete_activities
+from services.api_services.leaderboard_service import get_full_leaderboard
 from api.exceptions import AuthorizationError, ScopeError
 
 
@@ -21,7 +20,7 @@ def leaderboard():
 
     logger.info("Leaderboard request received.")
     try:
-        athlete_activities = get_all_athlete_activities()
+        athlete_activities = get_full_leaderboard()
         return jsonify({"leaderboard": athlete_activities}), 200
     except Exception as e:
         logger.error(f"Error generating leaderboard: {e}")
