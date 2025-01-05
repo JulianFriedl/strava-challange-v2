@@ -172,28 +172,33 @@ useEffect(() => {
     return () => clearTimeout(timer);
 }, []);
 
-  const handleSettingsChange = (settings) => {
-      if (isLoading) return
+const handleSettingsChange = (settings) => {
+  if (isLoading) return;
 
-      const yearsChanged = JSON.stringify(settings.years) !== JSON.stringify(years);
+  // Normalize years and athlete IDs for increased proxy cache hits
+  const normalizedYears = [...settings.years].sort();
+  const normalizedAthleteIDs = settings.selectedAthletes.map(String).sort();
 
-      const athletesChanged = JSON.stringify(settings.selectedAthletes.map(String).sort()) !==
-          JSON.stringify(selectedAthletes.map((athlete) => String(athlete.athlete_id)).sort());
+  const yearsChanged = JSON.stringify(normalizedYears) !== JSON.stringify(years.sort());
+  const athletesChanged =
+    JSON.stringify(normalizedAthleteIDs) !==
+    JSON.stringify(selectedAthletes.map((athlete) => String(athlete.athlete_id)).sort());
 
-      if (!yearsChanged && !athletesChanged) {
-          // console.log("No changes detected in settings, skipping update.");
-          return;
-      }
-      setIsLoading(true);
+  if (!yearsChanged && !athletesChanged) {
+    return;
+  }
 
-      // Update states with new settings
-      setYears(settings.years);
+  setIsLoading(true);
 
-      const selectedAthleteDetails = settings.selectedAthletes.map((id) =>
-          availableAthletes.find((athlete) => athlete.athlete_id.toString() === id)
-      );
-      setSelectedAthletes(selectedAthleteDetails);
-  };
+  // Update the years state with the normalized years
+  setYears(normalizedYears);
+
+  // Normalize and update the selected athletes state
+  const selectedAthleteDetails = normalizedAthleteIDs.map((id) =>
+    availableAthletes.find((athlete) => athlete.athlete_id.toString() === id)
+  );
+  setSelectedAthletes(selectedAthleteDetails);
+};
 
   const handleMapLoadComplete = React.useCallback(() => {
     setIsLoading(false);

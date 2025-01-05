@@ -24,7 +24,7 @@ def process_event(event):
                     endpoint="activity/create",
                     params={"activity_id": object_id},
                     task_type=TaskType.HANDLE_NEW_ACTIVITY,
-                    execute_after=datetime.now() + timedelta(seconds=5)
+                    execute_after=datetime.now() + timedelta(minutes=5)
 
                 )
             )

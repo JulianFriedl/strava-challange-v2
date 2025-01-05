@@ -12,4 +12,3 @@ requests
 orjson
 flask-compress
 colorlog
-freezegun

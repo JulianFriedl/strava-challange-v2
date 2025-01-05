@@ -1,6 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-import queue
 from dataclasses import dataclass
 import logging
 from enum import Enum
@@ -47,8 +46,6 @@ class TaskService:
         if cls._instance is None:
             cls._instance = super(TaskService, cls).__new__(cls)
             cls._instance.executor = ThreadPoolExecutor(max_workers=max_workers)
-            cls._instance.task_queue = []
-            cls._instance.queue_lock = threading.Lock()  # Protect task_queue
             cls._instance.active_timer = None  # Track the active timer for scheduling
             logger.info("ApiRequestService initialized with %d workers.", max_workers)
         return cls._instance
@@ -65,45 +62,26 @@ class TaskService:
             execute_after,
         )
 
-        with self.queue_lock:
-            execute_after = task.execute_after or datetime.now()
-            # heapq sorts the task_queue by its execute_after
-            # it sorts based on the first element of the tuple
-            heapq.heappush(self.task_queue, (execute_after, task))
-        self.executor.submit(self.process_queue)
+        now = datetime.now()
+        if execute_after <= now:
+            self.executor.submit(self.process_task, task)
+        else:
+            delay = (execute_after - now).total_seconds()
+            threading.Timer(delay, lambda: self.executor.submit(self.process_task, task)).start()
+            logger.info(
+                "Task delayed - Athlete_id: %s, Task Type: %s, Execute After: %s, Delay: %.2f seconds",
+                task.athlete_id,
+                task.task_type.value,
+                execute_after,
+                delay,
+            )
+
         logger.info("Task submitted successfully.")
 
-    # TODO: simplify design pattern. Currently:
-    # Requeue the task and sleep until the next execution time
-    # This design leverages a mix of a loop (to process all ready tasks)
-    # and a timer (to wait for future tasks without busy-waiting).
-    # It's somewhat complex because we combine immediate execution
-    # and delayed scheduling in the same flow.
-    def process_queue(self):
-        while True:
-            with self.queue_lock:
-                if not self.task_queue:
-                    return
-
-                execute_after, task = heapq.heappop(self.task_queue)
-                now = datetime.now()
-
-                if execute_after > now:
-                    # Requeue the task and sleep until the next execution time
-                    heapq.heappush(self.task_queue, (execute_after, task))
-                    delay = (execute_after - now).total_seconds()
-                    logger.info(
-                        "Task requeued - Athlete_id: %s, Task Type: %s, Execute After: %s, Delay: %.2f seconds",
-                        task.athlete_id,
-                        task.task_type.value,
-                        execute_after,
-                        delay,
-                    )
-                    threading.Timer(delay, self.process_queue).start()
-                    return  # return since there are no tasks that can be exec before execute_after
-
-            # Process the task outside the lock
-            self.process_task(task)
+    def handle_final_failure(self, retry_state):
+        logger.error(f"Final failure for task: {retry_state.args[1]}. Error: {retry_state.outcome.exception()}")
+        # TODO: Maybe safe failed Tasks to DB or to a queue for later inspection
+        return None
 
     @retry(
         stop=stop_after_attempt(3),
@@ -115,6 +93,7 @@ class TaskService:
         after=lambda retry_state: logger.error(
             f"Failed after attempt {retry_state.attempt_number}: {retry_state.outcome.exception()}"
         ),
+        retry_error_callback=lambda retry_state: TaskService._instance.handle_final_failure(retry_state),
     )
     def process_task(self, task: Task):
         logger.info("Processing task - %s", task)
