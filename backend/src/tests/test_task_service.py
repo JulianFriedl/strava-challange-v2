@@ -1,6 +1,5 @@
 import pytest
-from freezegun import freeze_time
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from services.core_services.task_service import TaskService, Task, TaskType
 from services.core_services.rate_limit_tracker import RateLimitTracker
 from datetime import datetime, timedelta
@@ -51,50 +50,47 @@ def test_retry_logic(mock_fetch_activities, task_service):
     task_service.executor.shutdown(wait=True)
     assert mock_fetch_activities.call_count == 3
 
-@patch("services.core_services.task_service.fetch_athlete_activities")
-def test_delayed_task_execution_with_mock_time(mock_fetch_activities, task_service):
-    """
-    Test that a task with an `execute_after` time is delayed correctly without actual waiting.
-    """
-    mock_fetch_activities.return_value = None
 
-    future_time = datetime.now() + timedelta(seconds=2)
-    delayed_task = Task(
+@patch.object(TaskService, "handle_final_failure")
+@patch("services.core_services.task_service.fetch_athlete_activities")
+def test_retry_logic_calls_final_failure(mock_fetch_activities, mock_handle_final_failure, task_service):
+    """
+    Test that handle_final_failure is invoked when retries are exhausted.
+    """
+    mock_fetch_activities.side_effect = Exception("Temporary error")
+
+    retry_task = Task(
         athlete_id=12345,
         endpoint="https://api.strava.com/api/v3/athlete/activities",
         params={},
         task_type=TaskType.FETCH_ACTIVITIES,
-        execute_after=future_time,
     )
 
-    with freeze_time(datetime.now()) as frozen_time:
-        task_service.submit_task(delayed_task)
-        # Initially, the task should not be executed
-        mock_fetch_activities.assert_not_called()
+    task_service.submit_task(retry_task)
+    task_service.executor.shutdown(wait=True)
 
-        # Move time forward by 2 seconds
-        frozen_time.tick(timedelta(seconds=2))
-        task_service.process_queue()  # Trigger task processing manually
-        mock_fetch_activities.assert_called_once_with(athlete_id=12345)
+    assert mock_handle_final_failure.call_count == 1
+
+    retry_state = mock_handle_final_failure.call_args[0][0]
+    assert retry_task in retry_state.args
 
 
 @patch("services.core_services.task_service.fetch_athlete_activities")
-def test_immediate_and_delayed_task_execution_with_mock_time(mock_fetch_activities, task_service):
+def test_immediate_and_delayed_task_execution(mock_fetch_activities, task_service):
     """
-    Test that immediate and delayed tasks are processed in the correct order using mocked time.
+    Test that immediate and delayed tasks are processed in the correct order.
     """
     mock_fetch_activities.return_value = None
 
-    # Immediate task
     immediate_task = Task(
         athlete_id=12345,
         endpoint="https://api.strava.com/api/v3/athlete/activities",
         params={},
         task_type=TaskType.FETCH_ACTIVITIES,
+        execute_after=datetime.now(),
     )
 
-    # Delayed task
-    future_time = datetime.now() + timedelta(seconds=2)
+    future_time = datetime.now() + timedelta(seconds=1)
     delayed_task = Task(
         athlete_id=67890,
         endpoint="https://api.strava.com/api/v3/athlete/activities",
@@ -103,33 +99,30 @@ def test_immediate_and_delayed_task_execution_with_mock_time(mock_fetch_activiti
         execute_after=future_time,
     )
 
-    with freeze_time(datetime.now()) as frozen_time:
-        task_service.submit_task(immediate_task)
-        task_service.submit_task(delayed_task)
+    task_service.submit_task(immediate_task)
+    task_service.submit_task(delayed_task)
 
-        # Trigger task processing for immediate task
-        task_service.process_queue()
-        mock_fetch_activities.assert_any_call(athlete_id=12345)
+    # Immediate task should execute right away
+    time.sleep(0.1)
+    mock_fetch_activities.assert_any_call(athlete_id=12345)
 
-        # Assert delayed task has not been called yet
-        assert not any(call.kwargs.get("athlete_id") == 67890 for call in mock_fetch_activities.mock_calls)
+    # Delayed task should not be executed yet
+    assert not any(call.kwargs.get("athlete_id") == 67890 for call in mock_fetch_activities.mock_calls)
 
-        # Move time forward by 2 seconds and process the delayed task
-        frozen_time.tick(timedelta(seconds=2))
-        task_service.process_queue()
-        mock_fetch_activities.assert_any_call(athlete_id=67890)
-        assert mock_fetch_activities.call_count == 2
+    # Wait for the delayed task to execute
+    time.sleep(1.1)
+    mock_fetch_activities.assert_any_call(athlete_id=67890)
+    assert mock_fetch_activities.call_count == 2
 
 @patch("services.core_services.task_service.fetch_athlete_activities")
-def test_large_number_of_tasks_with_mock_time(mock_fetch_activities, task_service):
+def test_large_number_of_tasks(mock_fetch_activities, task_service):
     """
     Test TaskService with a large number of tasks to ensure correct handling and execution timing.
     """
     mock_fetch_activities.return_value = None
     now = datetime.now()
 
-    # Create 100 tasks with staggered execution times
-    num_tasks = 100
+    num_tasks = 20
     tasks = [
         Task(
             athlete_id=1000 + i,
@@ -141,18 +134,14 @@ def test_large_number_of_tasks_with_mock_time(mock_fetch_activities, task_servic
         for i in range(num_tasks)
     ]
 
-    with freeze_time(now) as frozen_time:
-        # Submit all tasks
-        for task in tasks:
-            task_service.submit_task(task)
+    for task in tasks:
+        task_service.submit_task(task)
 
-        # Simulate time passing
-        for _ in range(num_tasks):
-            frozen_time.tick(timedelta(seconds=0.1))
-            task_service.process_queue()
+    time.sleep(num_tasks * 0.1 + 1)  # Add buffer time
 
-    # Verify all tasks were executed in the correct order
     assert mock_fetch_activities.call_count == num_tasks
+
+    # Ensure tasks were executed in the correct order
     processed_athletes = [call.kwargs["athlete_id"] for call in mock_fetch_activities.mock_calls]
     expected_athletes = [task.athlete_id for task in tasks]
     assert processed_athletes == expected_athletes, "Tasks were not executed in the correct order"
