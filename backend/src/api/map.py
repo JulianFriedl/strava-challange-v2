@@ -1,10 +1,12 @@
-from flask import Blueprint, jsonify, request, Response, redirect, session
+from flask import Blueprint, jsonify, request, Response, session
 from services.api_services.map_service import get_activities_with_polylines, get_all_athletes, get_all_years
 import logging
 import orjson
 import cProfile
 import pstats
 import io
+
+ARGS_LIMIT = 7
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +24,6 @@ def map():
         logger.info("Not logged in.")
         return jsonify({"error": "unauthenticated"}), 401
 
-    # profiler = cProfile.Profile()
-    # profiler.enable()
     try:
         # Parse and flatten the 'years' parameter
         years_raw = request.args.getlist('years')
@@ -40,12 +40,21 @@ def map():
             for item in athlete_ids_raw
             for athlete_id in item.split(',')
         ]
+    except ValueError as e:
+        logger.error(f"Invalid input provided: {e}")
+        return jsonify({"error": "Invalid athlete IDs or years"}), 400
 
+    # profiler = cProfile.Profile()
+    # profiler.enable()
+
+    response = None
+    if len(years) + len(athlete_ids) > ARGS_LIMIT:
+        logger.error(f"Too many args: {len(years) + len(athlete_ids)}")
+        response = jsonify({"error": "Too many args"}), 400
+    else:
         logger.info(f"Map request received, years: {years}, athlete_ids: {athlete_ids}")
-        response = None
         try:
             activities = get_activities_with_polylines(years, athlete_ids)
-
             response = Response(
             orjson.dumps(activities, option=orjson.OPT_SERIALIZE_DATACLASS | orjson.OPT_SERIALIZE_NUMPY),
             mimetype='application/json'
@@ -54,9 +63,6 @@ def map():
             logger.error(f"Error calling map service: {e}")
             response = jsonify({"error": "Failed to retrieve map data"}), 500
 
-    except ValueError as e:
-        logger.error(f"Invalid input provided: {e}")
-        response = jsonify({"error": "Invalid athlete IDs or years"}), 400
 
     # profiler.disable()  # Stop profiling
 
@@ -104,3 +110,16 @@ def years():
     except Exception as e:
         logger.error(f"Error fetching years: {e}")
         return jsonify({"error": "Failed to fetch years"}), 500
+
+@map_blueprint.route('/limit', methods=['GET'])
+def limit():
+    """
+    Return Limit for the amount of args to frontend
+    """
+    logger.info("Limit Request received.")
+
+    if not session.get("user_id"):
+        logger.info("Not logged in.")
+        return jsonify({"error": "unauthenticated"}), 401
+
+    return jsonify({"limit": ARGS_LIMIT}), 200

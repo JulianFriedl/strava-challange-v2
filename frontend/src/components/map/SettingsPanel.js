@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import websitePalette from '../../styles/palette';
 import CustomCheckbox from './CustomCheckbox';
 import ExpandableComponent from './ExpandableComponent';
+import { apiRequest } from '../../api';
 
 
 const StyledSettingsPanel = styled.div`
@@ -73,22 +74,44 @@ const StyledButton = styled.button`
 export default function SettingsPanel({ onSettingsChange, availableAthletes, availableYears, $isOpen }) {
     const [selectedAthletes, setSelectedAthletes] = useState([]);
     const [selectedYears, setSelectedYears] = useState({});
+    const [maxLimit, setMaxLimit] = useState(7);
+
+    useEffect(() => {
+      apiRequest('/map/limit')
+          .then((data) => setMaxLimit(data.limit))
+          .catch((error) => {
+              console.error('Error fetching limit:', error);
+          });
+    }, []);
+
+    const totalSelectionCount =
+        Object.keys(selectedYears).filter(year => selectedYears[year]).length +
+        selectedAthletes.length;
 
     const handleYearChange = (year) => {
-        setSelectedYears(prevYears => ({
-            ...prevYears,
-            [year]: !prevYears[year]
-        }));
+        setSelectedYears(prevYears => {
+            if (!prevYears[year] && totalSelectionCount >= maxLimit) {
+                return prevYears;
+            }
+            return {
+                ...prevYears,
+                [year]: !prevYears[year],
+            };
+        });
     };
 
     const handleAthleteChange = (athlete) => {
         setSelectedAthletes(prevSelection => {
             const athleteId = athlete.athlete_id.toString();
-            if (prevSelection.some(a => a.id === athleteId)) {
-                return prevSelection.filter(a => a.id !== athleteId);
-            } else {
-                return [...prevSelection, { id: athleteId, color: athlete.color }];
+            const isAlreadySelected = prevSelection.some(a => a.id === athleteId);
+
+            if (!isAlreadySelected && totalSelectionCount >= maxLimit) {
+                return prevSelection;
             }
+
+            return isAlreadySelected
+                ? prevSelection.filter(a => a.id !== athleteId)
+                : [...prevSelection, { id: athleteId, color: athlete.color }];
         });
     };
 
@@ -104,42 +127,48 @@ export default function SettingsPanel({ onSettingsChange, availableAthletes, ava
             <StyledScrollableForm>
                 <ExpandableComponent label="Years">
                     <StyledFormGroup>
-                      {availableYears.length > 0 ? (
-                                  availableYears.map((year) => (
-                                      <CustomCheckbox
-                                          key={year}
-                                          id={year}
-                                          checked={!!selectedYears[year]}
-                                          onChange={() => handleYearChange(year)}
-                                          label={year.toString()}
-                                          color='#5b5ea6'
-                                      />
-                                  ))
-                              ) : (
-                                  <p>No years available</p>
-                              )}
+                        {availableYears.length > 0 ? (
+                            availableYears.map((year) => (
+                                <CustomCheckbox
+                                    key={year}
+                                    id={year}
+                                    checked={!!selectedYears[year]}
+                                    onChange={() => handleYearChange(year)}
+                                    label={year.toString()}
+                                    color="#5b5ea6"
+                                    disabled={
+                                        !selectedYears[year] && totalSelectionCount >= maxLimit
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <p>No years available</p>
+                        )}
                     </StyledFormGroup>
                 </ExpandableComponent>
                 <ExpandableComponent label="Athletes">
                     <StyledFormGroup>
-                      {availableAthletes.length > 0 ? (
-                                  availableAthletes.map((athlete) => {
-                                      const athleteId = athlete.athlete_id.toString();
-                                      const isChecked = selectedAthletes.some(a => a.id === athleteId);
-                                      return (
-                                          <CustomCheckbox
-                                              key={athleteId}
-                                              id={athleteId}
-                                              checked={isChecked}
-                                              onChange={() => handleAthleteChange(athlete)}
-                                              label={athlete.first_name}
-                                              color={athlete.color}
-                                          />
-                                      );
-                                  })
-                              ) : (
-                                  <p>No athletes available</p>
-                              )}
+                        {availableAthletes.length > 0 ? (
+                            availableAthletes.map((athlete) => {
+                                const athleteId = athlete.athlete_id.toString();
+                                const isChecked = selectedAthletes.some(a => a.id === athleteId);
+                                return (
+                                    <CustomCheckbox
+                                        key={athleteId}
+                                        id={athleteId}
+                                        checked={isChecked}
+                                        onChange={() => handleAthleteChange(athlete)}
+                                        label={athlete.first_name}
+                                        color={athlete.color}
+                                        disabled={
+                                            !isChecked && totalSelectionCount >= maxLimit
+                                        }
+                                    />
+                                );
+                            })
+                        ) : (
+                            <p>No athletes available</p>
+                        )}
                     </StyledFormGroup>
                 </ExpandableComponent>
             </StyledScrollableForm>
@@ -148,4 +177,4 @@ export default function SettingsPanel({ onSettingsChange, availableAthletes, ava
             </StyledButton>
         </StyledSettingsPanel>
     );
-};
+}

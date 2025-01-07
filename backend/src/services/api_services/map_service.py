@@ -11,8 +11,7 @@ def get_activities_with_polylines(years, athlete_ids):
     """
     logger.debug(f"Fetching activities for years {years} and athlete_ids {athlete_ids}.")
     activity_repo = ActivityRepository()
-    activities = activity_repo.list_activities_with_polylines(athlete_ids, years)
-    return activities
+    return activity_repo.list_activities_with_polylines(athlete_ids, years)
 
 
 def get_all_athletes():
