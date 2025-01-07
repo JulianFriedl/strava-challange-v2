@@ -75,8 +75,6 @@ const Login = ({ authState }) => {
           
             if (category.name === 'Overall') {
               points = ranking.points;
-            } else if (category.name === 'Alpine Snow Sports') {
-              points = `${ranking.points}m`;
             } else {
               const hours = Math.floor(ranking.points / 60);
               const minutes = Math.round(ranking.points % 60);
