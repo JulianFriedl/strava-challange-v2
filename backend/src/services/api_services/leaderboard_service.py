@@ -67,26 +67,26 @@ def get_full_leaderboard():
         if last_type == "":
             last_type = mapped_types[t]
 
+        # switch activity category pool
+        if mapped_types[t] != last_type:
+            category.sort(key=lambda x: x["points"], reverse=True)
+            all.append({"name": last_type, "rankings": category})
+            category = []
+            last_type = mapped_types[t]
+
         for a in athletes:
             activities = activity_repo.find_activities_by_athlete_and_type_with_year2025(a.athlete_id, t)
             points = calc_total_points(activities, mapped_types[t])
             moving_time = calc_total_moving_time(activities)
 
-            # switch activity category pool
-            if mapped_types[t] != last_type:
-                category.sort(key=lambda x: x["points"], reverse=True)
-                all.append({"name": last_type, "rankings": category})
-                category = []
-                last_type = mapped_types[t]
-
             # insert new athlete to activity pool
             # or update athelte's points
-            entry = next((x for x in category if x["username"] == a.username), [])
+            entry = next((x for x in category if x["id"] == a.athlete_id), [])
             if entry:
                 category.remove(entry)
-                category.append({"username": a.username, "name": a.first_name + " " + a.last_name, "points": entry["points"] + points, "mov": entry["mov"] + moving_time})
+                category.append({"id": a.athlete_id, "name": a.first_name + " " + a.last_name, "points": entry["points"] + points, "mov": entry["mov"] + moving_time})
             else:
-                category.append({"username": a.username, "name": a.first_name + " " + a.last_name, "points": points, "mov": moving_time})
+                category.append({"id": a.athlete_id, "name": a.first_name + " " + a.last_name, "points": points, "mov": moving_time})
 
     category.sort(key=lambda x: x["points"], reverse=True)
     all.append({"name": last_type, "rankings": category})
@@ -97,7 +97,7 @@ def get_full_leaderboard():
     for a in athletes:
         places = []
         for cat in all:
-            indices = [x for x in cat["rankings"] if x["username"] == a.username]
+            indices = [x for x in cat["rankings"] if x["id"] == a.athlete_id]
             if indices[0]["points"] != 0:
                 places.append({"rank": cat["rankings"].index(indices[0]), "mov": indices[0]["mov"]})
         # sort places list for a better usage later when taking only the best 3 places
@@ -111,7 +111,7 @@ def get_full_leaderboard():
                 break
             sum += 10 - places[i]["rank"]
             sum_mov += places[i]["mov"]
-        total.append({"username": a.username, "name": a.first_name + " " + a.last_name, "points": sum, "mov": sum_mov})
+        total.append({"id": a.athlete_id, "name": a.first_name + " " + a.last_name, "points": sum, "mov": sum_mov})
 
     # sort overall leaderboard in search for a tie
     total = sort_overall_leaderboard(total)
