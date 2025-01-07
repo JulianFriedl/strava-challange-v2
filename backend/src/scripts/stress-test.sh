@@ -3,13 +3,13 @@
 # ./stress_test.sh
 # you need to disable flask sessions for map endpoint in order to run this
 
-BASE_URL="http://localhost/api/map/"
+BASE_URL="https://scsport.eu/api/map/"
 
 YEARS=("2020,2021" "2022,2023" "2024,2025" "2021,2022" "2023,2025")
 
 ATHLETES=("64384000,83693886,60746061" "129231074,65832043,64384000" "83693886,129231074,60746061" "65832043,64384000,83693886")
 
-REQUEST_COUNT=100
+REQUEST_COUNT=100000
 
 DELAY=0
 
@@ -23,8 +23,10 @@ do
   YEARS_PARAM="${YEARS[$YEARS_IDX]}"
   ATHLETES_PARAM="${ATHLETES[$ATHLETES_IDX]}"
 
-  curl -s -o /dev/null -w "Request $i: HTTP Status: %{http_code}\n" \
-    "${BASE_URL}?years=${YEARS_PARAM}&athletes=${ATHLETES_PARAM}"
+  # curl -s -o /dev/null -w "Request $i: HTTP Status: %{http_code}\n" \
+  #   "${BASE_URL}?years=${YEARS_PARAM}&athletes=${ATHLETES_PARAM}"
+  curl -s -o /dev/null \
+    "${BASE_URL}?years=${YEARS_PARAM}&athletes=${ATHLETES_PARAM}" &
 
   sleep $DELAY
 done
