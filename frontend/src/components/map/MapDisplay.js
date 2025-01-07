@@ -3,11 +3,26 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styled from 'styled-components';
 import { apiRequest } from '../../api';
+import websitePalette from '../../styles/palette';
 
 const StyledMap = styled.div`
     height: 100%;
     width: 100%;
     `;
+
+const LoadingIndicator = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1rem 2rem;
+    border-radius: 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    font-size: 1.2rem;
+    color: ${websitePalette.text};
+`;
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -17,15 +32,15 @@ L.Icon.Default.mergeOptions({
 });
 
 
-export default function MapDisplay({ years, selectedAthletes, onLoadComplete}) {
+export default function MapDisplay({ years, selectedAthletes, onLoadComplete }) {
     const [, setRoutesData] = useState([]);
+    const [loading, setLoading] = useState(false); // Track loading state
     const mapRef = useRef(null);
     const routesGroupRef = useRef(null);
     const highlightedRoutesGroupRef = useRef(null);
     const isZoomingRef = useRef(false); // Ref to track zooming state
     const cancelDrawingRef = useRef(false);
 
-    // Initialize the map once
     useEffect(() => {
         if (!mapRef.current) {
             const map = L.map('map', {
@@ -59,17 +74,18 @@ export default function MapDisplay({ years, selectedAthletes, onLoadComplete}) {
     }, []);
 
     useEffect(() => {
-      // Clear all existing map layers (routes and highlights)
-      if (mapRef.current && highlightedRoutesGroupRef.current) {
-          routesGroupRef.current.clearLayers();
-          highlightedRoutesGroupRef.current.clearLayers();
-      }
-       const fetchDataAndDraw = async () => {
+        if (mapRef.current && highlightedRoutesGroupRef.current) {
+            routesGroupRef.current.clearLayers();
+            highlightedRoutesGroupRef.current.clearLayers();
+        }
+
+        const fetchDataAndDraw = async () => {
             if (years.length === 0 || selectedAthletes.length === 0) {
-                // console.log('No parameters set, skipping fetch.');
                 onLoadComplete();
                 return;
             }
+
+            setLoading(true); // Set loading to true before fetching data
 
             try {
                 const params = new URLSearchParams({
@@ -95,6 +111,7 @@ export default function MapDisplay({ years, selectedAthletes, onLoadComplete}) {
                 console.error('Error fetching data:', error);
                 setRoutesData([]);
             } finally {
+                setLoading(false); // Set loading to false after fetching
                 onLoadComplete();
             }
         };
@@ -106,7 +123,12 @@ export default function MapDisplay({ years, selectedAthletes, onLoadComplete}) {
         };
     }, [years, selectedAthletes, onLoadComplete]);
 
-    return <StyledMap id="map" />;
+    return (
+        <>
+            {loading && <LoadingIndicator>Loading...</LoadingIndicator>}
+            <StyledMap id="map" />
+        </>
+    );
 }
 
 const isMobile = window.matchMedia("(max-width: 1000px)").matches;
