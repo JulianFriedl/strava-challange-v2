@@ -6,42 +6,6 @@ import LogoutButton from './LogoutButton.js'
 import websitePalette from '../styles/palette';
 import {Link} from "react-router-dom";
 
-const HeaderContainer = styled.header`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  background-color: ${websitePalette.background};
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-height: clamp(4.5rem, 3.6vw, 50rem);
-  z-index: 10;
-  // position: fixed; /* Sticks to the top of the viewport */
-  width: 100%;
-  overflow-x: auto; /* Enable horizontal scrolling if content overflows */
-  overflow-y: hidden; /* Prevent vertical scrollbars */
-  white-space: nowrap; /* Prevent wrapping of child elements */
-  min-height: 4.5rem;
-`;
-
-const LeftSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-const CenterSection = styled.nav`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-`;
-
-const RightSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
 const StyledLink = styled(Link)`
   color: ${websitePalette.primary};
   text-decoration: none;
@@ -58,27 +22,27 @@ const StyledLink = styled(Link)`
 
 const Header = ({ authState, onLogout }) => {
   return (
-    <HeaderContainer>
-      <LeftSection>
+    <header>
+      <div>
         <HomeButton />
-      </LeftSection>
+      </div>
 
-      <CenterSection>
+      <div>
         {/* Add other navigation links if needed */}
         <StyledLink to ="/">Ranking</StyledLink>
         <StyledLink to ="/analytics">Analytics</StyledLink>
         <StyledLink to ="/map">Map</StyledLink>
         <StyledLink to ="/about">About/Rules</StyledLink>
-      </CenterSection>
+      </div>
 
-      <RightSection>
+      <div>
         {authState.loggedIn ? (
           <LogoutButton onLogout={onLogout} />
         ) : (
           <StravaButton />
         )}
-      </RightSection>
-    </HeaderContainer>
+      </div>
+    </header>
   );
 };
 

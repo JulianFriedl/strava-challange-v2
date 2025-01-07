@@ -12,7 +12,6 @@ const websitePalette = {
     buttonText: '#ffffff', // Pure White for text on buttons
     link: '#88b04b', // Green for links
     linkHover: '#dd4124', // Warm Red for hover states
-  };
+};
 
-  export default websitePalette;
-
+export default websitePalette;

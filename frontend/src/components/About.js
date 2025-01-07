@@ -2,13 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import websitePalette from '../styles/palette';
 
-const AboutContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -23,14 +16,10 @@ const Title = styled.h1`
   color: ${websitePalette.primary};
 `;
 
-const Bold = styled.span`
-  font-weight: bold;
-`;
-
 const About = () => {
 
   return (
-    <AboutContainer>
+    <div class="about">
       <Container>
         <Title>Rules</Title>
         <h4>General information</h4>
@@ -38,13 +27,13 @@ const About = () => {
         <p>
           Every challenge has a leaderboard. And so there's no exception to this one.
           There will be one total leaderboard, but also one for each type of activity* (*subject to grouping).
-          The ranking in the total leaderboard is determined by the <Bold>Top 3 places of all activity based rankings</Bold> of a person.
+          The ranking in the total leaderboard is determined by the <b>Top 3 places of all activity based rankings</b> of a person.
           The rank is based on the total hours of moving time in an activity group. NOTE: there's an exception to alpine skiing as well as snowboarding. The measurement unit for this sport is the total amount of descended vertical meters.
           <br />
           Regarding points, a person comming in first in an activity ranking, will get 10 points. The tenth person in that ranking will get 1 point. You can guess the rest.
           <br />
-          Imagine a person with a <Bold>first place in biking</Bold> a <Bold>fifth place in ball sports</Bold> and a <Bold>third place in running</Bold>.
-          Their total points will be: <Bold>10 (biking) + 6 (ball sports) + 8 (running) = 24</Bold>.
+          Imagine a person with a <b>first place in biking</b> a <b>fifth place in ball sports</b> and a <b>third place in running</b>.
+          Their total points will be: <b>10 (biking) + 6 (ball sports) + 8 (running) = 24</b>.
           <br />
           In case there's a tie, the person with the higher value in overall moving time of all 3 categories wins the tiebreaker. A notable exception to this is gym, where it's not total moving time but rather elapsed total time.
         </p>
@@ -52,15 +41,15 @@ const About = () => {
         <h4>Accepted types of activities:</h4>
 
         <p>
-          <Bold>Bike</Bold>: (Road bike, Mountainbike, Virtualbike, Gravelbike)<br />
-          <Bold>Run</Bold>: (Run, Trailrun, Edgecase (Holleger Racewalk))<br />
-          <Bold>Hiking</Bold>: (Skitour, Hiking, Snow shoeing)<br />
-          <Bold>Alpine Snow Sports</Bold>: (Ski, Snowboard)<br />
-          <Bold>Langlaufen / Inline</Bold>: (selbsterklärend)<br />
-          <Bold>Gym</Bold>: (Weighted Training, HIIT, Training)<br />
-          <Bold>Ball Sports</Bold>: ( Volleyball, Football, Badminton, Pickleball, Tennis, Table Tennis, etc.)<br />
-          <Bold>Klettern</Bold>: (Bouldern, Klettern)<br />
-          <Bold>Water Sports</Bold>: (Canoe, Kayak, Kitesurf, Rowing, Stand Up Paddling, Surf, Swim, Windsurf)<br />
+          <b>Bike</b>: (Road bike, Mountainbike, Virtualbike, Gravelbike)<br />
+          <b>Run</b>: (Run, Trailrun, Edgecase (Holleger Racewalk))<br />
+          <b>Hiking</b>: (Skitour, Hiking, Snow shoeing)<br />
+          <b>Alpine Snow Sports</b>: (Ski, Snowboard)<br />
+          <b>Langlaufen / Inline</b>: (selbsterklärend)<br />
+          <b>Gym</b>: (Weighted Training, HIIT, Training)<br />
+          <b>Ball Sports</b>: ( Volleyball, Football, Badminton, Pickleball, Tennis, Table Tennis, etc.)<br />
+          <b>Klettern</b>: (Bouldern, Klettern)<br />
+          <b>Water Sports</b>: (Canoe, Kayak, Kitesurf, Rowing, Stand Up Paddling, Surf, Swim, Windsurf)<br />
         </p>
 
         <h4>Prizepool</h4>
@@ -88,7 +77,7 @@ const About = () => {
 
         <p>In order for us to rightfully handle your activities, please make sure to upload your activity on the same day. For activities with an gpx file attached (visible map in strava), this doesn't apply.</p>
       </Container>
-    </AboutContainer>
+    </div>
   );
 }
 

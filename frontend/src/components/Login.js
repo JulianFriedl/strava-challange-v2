@@ -13,7 +13,7 @@ const LandingPageContainer = styled.div`
   background-color: ${websitePalette.background};
   color: ${websitePalette.text};
   text-align: center;
-  padding: clamp(15px, 5vw, 40px); /* Dynamic padding */
+  // padding: clamp(15px, 5vw, 40px); /* Dynamic padding */
 `;
 
 const LoginContainer = styled.div`
@@ -121,8 +121,8 @@ const Login = ({ authState }) => {
   if (!authState.loggedIn) {
     return (
       <LandingPageContainer>
-        <Title>Welcome</Title>
-        <Description>Log in to explore your routes, stats, and more!</Description>
+        <Title>Welcome to <span class="highlightText">challenge 2025!</span></Title>
+        <Description>Log in to explore your routes, stats, and more! But first, make sure to carefully read the rules.</Description>
         <About />
       </LandingPageContainer>
     );

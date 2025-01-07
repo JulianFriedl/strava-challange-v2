@@ -3,13 +3,15 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import Map from './components/map/Map';
 import Login from './components/Login.js'
+import StravaButton from './components/StravaButton.js';
 import Header from './components/Header';
-import Overlay from './components/Overlay';
 import { createGlobalStyle } from 'styled-components';
 import websitePalette from './styles/palette';
 import { API_BASE_URL } from './api';
 import About from './components/About.js';
+import Footer from './components/Footer.js';
 import Analytics from './components/analytics/Analytics.js'
+import './styles/layout.css'
 
 export const GlobalStyle = createGlobalStyle`
   *,
@@ -36,6 +38,7 @@ export const GlobalStyle = createGlobalStyle`
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   height: calc(var(--vh, 1vh) * 100);
 `;
 
@@ -95,6 +98,26 @@ function App() {
     return <div>Loading...</div>;
   }
 
+  if (!authState.loggedIn) {
+    return (
+      <>
+      <GlobalStyle />
+      <Router>
+        <AppContainer>
+          <Routes>
+            <Route path="/" element={<Login authState={authState} />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+          <div class="loginBtn">
+            <StravaButton />
+          </div>
+          <Footer />
+        </AppContainer>
+      </Router>
+    </>
+    );
+  }
+
   return (
     <>
       <GlobalStyle />
@@ -107,7 +130,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/analytics/*" element={<Analytics authState={authState}/>}/>
           </Routes>
-          <Overlay />
+          <Footer />
         </AppContainer>
       </Router>
     </>
