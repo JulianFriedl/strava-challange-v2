@@ -20,32 +20,6 @@ WHITELISTED_ATHLETE_IDS = {
     94833492, 74888401, 59640444, 154666407, 107152936, 80071340, 154777076, 15993413
 }
 
-def process_strava_callback(code):
-    """
-    Exchange code for access token, check whitelist, and save or reject the athlete.
-    """
-    logger.debug(f"Processing Strava callback for code: {code}")
-
-    athlete_repo = AthleteRepository()
-    # Exchange authorization code for access token
-    for attempt in range(3):
-        try:
-            token_response = requests.post(
-                "https://www.strava.com/oauth/token",
-                data={
-                    "client_id": STRAVA_CLIENT_ID,
-                    "client_secret": STRAVA_CLIENT_SECRET,
-                    "code": code,
-                    "grant_type": "authorization_code",
-                },
-                timeout=10,
-            )
-            token_response.raise_for_status()
-            token_data = token_response.json()
-            break  # Exit loop on success
-        except requests.exceptions.RequestException as e:
-            logger.error
-
 def handle_strava_auth():
     """
     Generate Strava OAuth URL.
