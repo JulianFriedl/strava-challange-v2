@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, Response, session
+from flask import Blueprint, jsonify, request, Response, session, after_this_request
 from services.api_services.map_service import get_activities_with_polylines, get_all_athletes, get_all_years
 import logging
 import orjson
