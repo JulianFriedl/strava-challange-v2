@@ -10,7 +10,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-    command: mongod --wiredTigerCacheSizeGB 0.1 # keep cache size to 0.1 GB
+    command: mongod --wiredTigerCacheSizeGB 0.5 --nojournal # keep cache size small to prevent OOM on prod
     networks:
       - strava-challange-network
 
