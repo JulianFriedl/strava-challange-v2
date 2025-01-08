@@ -158,6 +158,6 @@ class ActivityRepository:
             result = self.collection.delete_many({"athlete_id": athlete_id})
 
             logger.info(f"Deleted {result.deleted_count} activities for athlete ID {athlete_id}.")
-            return result.deleted_countactivity
+            return result.deleted_count
         except PyMongoError as e:
             raise Exception(f"Error deleting activities for athlete ID {athlete_id}.") from e
