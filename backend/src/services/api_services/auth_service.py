@@ -15,6 +15,36 @@ STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRETE")
 STRAVA_REDIRECT_URI = os.getenv("STRAVA_REDIRECT_URI")
 
 
+WHITELISTED_ATHLETE_IDS = {
+    64384000, 65832043, 60746061, 85128861, 136722253, 83693886, 129231074,
+    94833492, 74888401, 59640444, 154666407, 107152936, 80071340, 154777076, 15993413
+}
+
+def process_strava_callback(code):
+    """
+    Exchange code for access token, check whitelist, and save or reject the athlete.
+    """
+    logger.debug(f"Processing Strava callback for code: {code}")
+
+    athlete_repo = AthleteRepository()
+    # Exchange authorization code for access token
+    for attempt in range(3):
+        try:
+            token_response = requests.post(
+                "https://www.strava.com/oauth/token",
+                data={
+                    "client_id": STRAVA_CLIENT_ID,
+                    "client_secret": STRAVA_CLIENT_SECRET,
+                    "code": code,
+                    "grant_type": "authorization_code",
+                },
+                timeout=10,
+            )
+            token_response.raise_for_status()
+            token_data = token_response.json()
+            break  # Exit loop on success
+        except requests.exceptions.RequestException as e:
+            logger.error
 
 def handle_strava_auth():
     """
@@ -68,6 +98,24 @@ def process_strava_callback(code):
     logger.info(f"Token exchange suceeded after {attempt + 1} tries.")
     access_token = token_data["access_token"]
     athlete_data = token_data["athlete"]
+
+    # check if athlete is whitelisted
+    athlete_id = athlete_data["id"]
+    if athlete_id not in WHITELISTED_ATHLETE_IDS:
+        logger.warning(f"Athlete {athlete_id} is not whitelisted. Revoking access token.")
+
+        try:
+            revoke_response = requests.post(
+                "https://www.strava.com/oauth/deauthorize",
+                headers={"Authorization": f"Bearer {access_token}"},
+                timeout=10
+            )
+            revoke_response.raise_for_status()
+            logger.info(f"Successfully revoked access token for athlete {athlete_id}.")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to revoke access token for athlete {athlete_id}: {e}")
+
+        raise AuthorizationError(f"Athlete {athlete_id} is not authorized to use this app.")
 
     # Construct Athlete instance
     athlete = Athlete(

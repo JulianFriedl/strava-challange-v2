@@ -18,12 +18,11 @@ def handle_updated_athlete(athlete_id: int, updated_fields: dict):
             if not athlete_deleted:
                 logger.warning(f"Athlete {athlete_id} not found. No deletion performed.")
 
-            deleted_count = activity_repo.delete_activities_by_athlete_id(athlete_id)
-            logger.info(f"Deleted {deleted_count} activities for athlete {athlete_id}.")
+            activity_repo.delete_activities_by_athlete_id(athlete_id)
 
             logger.info(f"Successfully handled deauthorization for athlete {athlete_id}.")
         else:
             logger.warning(f"Unexpected update fields for athlete {athlete_id}: {updated_fields}")
 
     except Exception as e:
-        raise Exception(f"Failed to handle updated athlete {athlete_id}.") from e
+        raise Exception(f"Failed to handle updated athlete {athlete_id}. {e}") from e
