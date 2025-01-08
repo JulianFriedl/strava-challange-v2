@@ -6,6 +6,7 @@ import flask_cors
 from pymongo.errors import ConnectionFailure
 import atexit
 from datetime import timedelta
+import gc
 
 from repositories.athlete_repo import AthleteRepository
 from utils.db_mongo import MongoDB
@@ -56,6 +57,10 @@ app.register_blueprint(map_blueprint, url_prefix='/api/map')
 app.register_blueprint(webhook_blueprint, url_prefix='/api/webhook')
 app.register_blueprint(leaderboard_blueprint, url_prefix='/api/leaderboard')
 
+
+@app.teardown_request
+def cleanup(exception=None):
+    gc.collect()
 
 def initialize_database():
     try:
