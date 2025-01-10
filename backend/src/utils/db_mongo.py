@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class MongoDB:
     _instance = None
 
@@ -32,7 +33,7 @@ class MongoDB:
                 MongoDB._instance = client[db_name]
                 logging.info(f"Connected to database: {MongoDB._instance.name}")
             except ConnectionFailure as e:
-                logging.error(f"Failed to connect to MongoDB")
+                logging.error("Failed to connect to MongoDB")
                 logging.debug(f"{e}")
                 raise
 

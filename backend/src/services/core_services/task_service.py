@@ -5,7 +5,6 @@ import logging
 from enum import Enum
 from datetime import datetime, timedelta
 import threading
-import heapq
 
 from api.exceptions import RateLimitExceededException
 

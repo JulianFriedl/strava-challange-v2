@@ -31,6 +31,21 @@ export const GlobalStyle = createGlobalStyle`
     height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height */
   }
 
+  input[type="checkbox"], input[type="radio"] {
+    -webkit-appearance: none; /* Remove default iOS styles */
+    appearance: none; /* Normalize across browsers */
+    margin: 0; /* Reset margin for consistent alignment */
+  }
+
+  input[type="checkbox"] {
+    position: relative; /* Ensure proper stacking context */
+    z-index: -1; /* Ensure it doesn’t interfere with visible styles */
+  }
+
+  label, span, button {
+    touch-action: manipulation; /* Improve touch behavior on mobile */
+  }
+
 `;
 
 const AppContainer = styled.div`

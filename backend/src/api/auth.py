@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, redirect, session
 import logging
 import os
+import re
 
 from services.api_services.auth_service import handle_strava_auth, process_strava_callback
 from api.exceptions import AuthorizationError, ScopeError
@@ -31,7 +32,8 @@ def strava_auth_callback():
     code = request.args.get("code")
     scope = request.args.get("scope")
     logger.info(f"Strava_auth_callback called. Code: {code}, scope: {scope}")
-
+    if not re.match(r"^[a-zA-Z0-9_-]{10,50}$", code):  # TODO test this regex
+        return jsonify({"error": "Invalid code"}), 400
     scope_necassary = {"read", "activity:read"}
 
     if not code:
