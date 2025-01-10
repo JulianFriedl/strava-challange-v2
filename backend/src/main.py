@@ -1,17 +1,15 @@
 import os
 import logging
-from flask import Flask, session
+from flask import Flask
 from flask_session import Session
 import flask_cors
 from pymongo.errors import ConnectionFailure
-import atexit
 from datetime import timedelta
 import gc
 
 from repositories.athlete_repo import AthleteRepository
 from utils.db_mongo import MongoDB
 from scripts.seed_data import seed_athletes, seed_activities
-from services.core_services.task_service import TaskService
 from api.auth import auth_blueprint
 from api.map import map_blueprint
 from api.webhook import webhook_blueprint
@@ -62,6 +60,7 @@ app.register_blueprint(leaderboard_blueprint, url_prefix='/api/leaderboard')
 def cleanup(exception=None):
     gc.collect()
 
+
 def initialize_database():
     try:
         db_instance = MongoDB.get_instance()
@@ -70,6 +69,7 @@ def initialize_database():
     except ConnectionFailure as e:
         logger.error("Failed to connect to MongoDB: %s", e)
         raise
+
 
 def seed_database_if_empty():
     """
