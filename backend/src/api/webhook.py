@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 import logging
+import os
 
 from services.api_services.webhook_service import process_event
 from api.exceptions import ParamError
@@ -8,6 +9,8 @@ logger = logging.getLogger(__name__)
 webhook_blueprint = Blueprint('webhook', __name__)
 
 VERIFY_TOKEN = 'fhgndpahFHDdjdbG837zFH9g98ghH'
+
+STRAVA_WEBHOOK_ID = os.getenv('STRAVA_WEBHOOK_ID')
 
 @webhook_blueprint.route('', methods=['GET', 'POST'])
 def webhook_callback():
@@ -37,6 +40,10 @@ def handle_webhook_event(req):
         logger.warning("Webhook event received with no JSON payload.")
         return jsonify({'error': 'Invalid payload'}), 400
 
+    if event.get('subscription_id') != int(STRAVA_WEBHOOK_ID):
+        logger.warning(f"Webhook event received with invalid Webhook_ID: {event.get('subscription_id')}, Valid WebhookID: {STRAVA_WEBHOOK_ID}.")
+        # return jsonify({"error": "unauthenticated"}), 401
+
     try:
         process_event(event)
         logger.info("Webhook event processed successfully.")
@@ -47,4 +54,3 @@ def handle_webhook_event(req):
     except Exception as e:
         logger.error(f"Error processing webhook event: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
-
