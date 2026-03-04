@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import '../../styles/leaderboard.css'
 
 const Container = styled.div`
-  max-width: min(1200px, 90vw);
-  margin: 0 auto;
-  padding: clamp(12px, 2vw, 24px);
-  position: relative;
-  height: calc(var(--vh, 1vh) * 100);
-  overflow-y: auto;
+  // border: 2px solid khaki;
+  width: 80vw;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: start;
+  height: 100vh;
 
   @media (max-width: 768px) {
     overflow-y: auto;
@@ -15,21 +16,26 @@ const Container = styled.div`
 `;
 
 const Card = styled.div`
-  padding: clamp(16px, 3vw, 24px);
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 25px;
+  box-shadow: 0 0 10px #ccc;
   background-color: white;
+  padding: 10px 30px 10px 30px;
 `;
 
 const LeaderboardCard = styled(Card)`
+  height: 60%;
   width: 100%;
-  max-width: min(600px, 90vw);
-  margin: 0 auto clamp(16px, 4vw, 32px) auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 const SportCategoryCard = styled(Card)`
-  width: clamp(280px, 45vw, 400px);
   flex-shrink: 0;
+  width: 50%;
+  overflow-y: auto;
+  margin: 0 10px;
 
   @media (max-width: 768px) {
     width: min(400px, 90vw);
@@ -37,16 +43,17 @@ const SportCategoryCard = styled(Card)`
 `;
 
 const Header = styled.h2`
-  margin: 0 0 clamp(12px, 2vw, 20px) 0;
+  // margin: 0 0 clamp(12px, 2vw, 20px) 0;
   font-size: clamp(18px, 2.5vw, 24px);
   font-weight: bold;
   text-align: center;
 `;
 
 const List = styled.div`
-  height: clamp(200px, 40vh, 400px);
-  overflow-y: auto;
-  padding: 0 clamp(12px, 2vw, 20px);
+  height: 100%;
+  // height: clamp(200px, 40vh, 400px);
+  // overflow-y: auto;
+  // padding: 0 clamp(12px, 2vw, 20px);
 
   /* Scrollbar styling */
   &::-webkit-scrollbar {
@@ -67,12 +74,11 @@ const List = styled.div`
 const ListItem = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: clamp(4px, 1vw, 8px) 0;
+  line-height: 30px;
 `;
 
 const NameContainer = styled.div`
   display: flex;
-  gap: clamp(6px, 1vw, 10px);
 `;
 
 const Ranking = styled.span`
@@ -88,48 +94,29 @@ const Points = styled.span`
 `;
 
 const SwipeContainer = styled.div`
-  position: relative;
+  // border: 2px solid red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
-  margin: clamp(16px, 3vw, 32px) 0;
+  height: 100%;
+  width: 100%;
+  padding: 20px 10px;
 `;
 
 const SwipeWrapper = styled.div`
+  // border: 2px solid red;
   display: flex;
-  gap: clamp(16px, 3vw, 32px);
   justify-content: center;
   flex-wrap: wrap;
+  height: 100%;
+  width: 90%;
 
   @media (min-width: 769px) {
     flex-wrap: nowrap;
   }
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: clamp(12px, 2vw, 20px);
-  margin-top: clamp(12px, 2vw, 20px);
-`;
-
-const Button = styled.button`
-  padding: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 20px);
-  border: none;
-  border-radius: 6px;
-  background-color: #3B82F6;
-  color: white;
-  cursor: pointer;
-  font-size: clamp(14px, 1.5vw, 16px);
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #2563EB;
-  }
-
-  &:disabled {
-    background-color: #D1D5DB;
-    cursor: not-allowed;
-  }
-`;
 
 const Leaderboard = ({ rankings = [] }) => {
   if (!Array.isArray(rankings)) {
@@ -139,18 +126,21 @@ const Leaderboard = ({ rankings = [] }) => {
 
   return (
     <LeaderboardCard>
-      <Header>Overall Leaderboard</Header>
-      <List>
-        {rankings.map((rank, index) => (
-          <ListItem key={index}>
-            <NameContainer>
-              <Ranking>{`${index + 1}.`}</Ranking>
-              <Name>{rank.name}</Name>
-            </NameContainer>
-            <Points>{rank.points}</Points>
-          </ListItem>
-        ))}
-      </List>
+      <div class="innerCard">
+        <Header>Overall Leaderboard</Header>
+        <br />
+        <List>
+          {rankings.map((rank, index) => (
+            <ListItem key={index}>
+              <NameContainer>
+                <Ranking>{`${index + 1}.`}</Ranking>
+                <Name>{rank.name}</Name>
+              </NameContainer>
+              <Points>{rank.points}</Points>
+            </ListItem>
+          ))}
+        </List>
+      </div>
     </LeaderboardCard>
   );
 };
@@ -158,6 +148,7 @@ const Leaderboard = ({ rankings = [] }) => {
 const SportCard = ({ category, rankings }) => (
   <SportCategoryCard>
     <Header>{category}</Header>
+    <br />
     <List>
       {rankings.map((rank, index) => (
         <ListItem key={index}>
@@ -195,7 +186,7 @@ const SwipeCards = ({ categories }) => {
   );
 
   return (
-    <div>
+    <div class="rankings">
       <SwipeContainer>
         <SwipeWrapper>
           {visibleCategories.map((category, index) => (
@@ -207,21 +198,21 @@ const SwipeCards = ({ categories }) => {
           ))}
         </SwipeWrapper>
       </SwipeContainer>
-
-      <ButtonContainer>
-        <Button
+      <div class="buttons">
+        <button
           onClick={handlePrev}
           disabled={currentStartIndex === 0}
         >
           Previous
-        </Button>
-        <Button
+        </button>
+        <div class="space"/>
+        <button
           onClick={handleNext}
           disabled={currentStartIndex >= categories.length - cardsToShow}
         >
           Next
-        </Button>
-      </ButtonContainer>
+        </button>
+      </div>
     </div>
   );
 };
@@ -229,10 +220,38 @@ const SwipeCards = ({ categories }) => {
 const RankingTab = ({ overallRankings, sportCategories }) => {
   const rankings = overallRankings?.rankings || [];
   const filteredCategories = sportCategories?.filter(cat => cat.name !== 'Overall') || [];
+  const [top3, setTop3] = useState([]);
+
+  useEffect(() => {
+    if (sportCategories) {
+      let overall = sportCategories.filter(cat => cat.name === 'Overall')[0];
+      setTop3(overall.rankings.slice(0, 3));
+    }
+  }, [sportCategories]);
 
   return (
     <Container>
-      <Leaderboard rankings={rankings} />
+      <div class="overall">
+        <div class="top3">
+          <div class="place">
+            <img src={top3[1]?.url.full} alt={top3[1]?.name || ""} />
+            <p>{top3[1]?.name || ""}</p>
+            <div id="second" />
+          </div>
+          <div class="place">
+            <img src={top3[0]?.url.full} alt={top3[0]?.name || ""} />
+            <p>{top3[0]?.name || ""}</p>
+            <div id="first" />
+          </div>
+          <div class="place">
+            <img src={top3[2]?.url.full} alt={top3[2]?.name || ""} />
+            <p>{top3[2]?.name || ""}</p>
+            <div id="third" />
+          </div>
+        </div>
+        <Leaderboard rankings={rankings} />
+      </div>
+      <hr id="leaderboard-hr"/>
       {filteredCategories.length > 0 && (
         <SwipeCards categories={filteredCategories} />
       )}

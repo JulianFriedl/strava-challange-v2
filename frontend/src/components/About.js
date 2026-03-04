@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import websitePalette from '../styles/palette';
 
 const Container = styled.div`
   display: flex;
@@ -10,18 +9,12 @@ const Container = styled.div`
   width: clamp(300px,60vw, 2000px);
 `;
 
-const Title = styled.h1`
-  font-size: clamp(2rem, 3vw, 40rem);
-  margin-bottom: 20px;
-  color: ${websitePalette.primary};
-`;
-
 const About = () => {
 
   return (
     <div class="about">
       <Container>
-        <Title>Rules</Title>
+        <h1 class="head">Rules</h1>
         <h4>General information</h4>
 
         <p>
@@ -41,14 +34,14 @@ const About = () => {
         <h4>Accepted types of activities:</h4>
 
         <p>
-          <b>Bike</b>: (Road bike, Mountainbike, Virtualbike, Gravelbike)<br />
-          <b>Run</b>: (Run, Trailrun, Edgecase (Holleger Racewalk))<br />
+          <b>Biking</b>: (Road bike, Mountainbike, Virtualbike, Gravelbike, etc.)<br />
+          <b>Running</b>: (Run, Trailrun, Edgecase (Holleger Racewalk), etc.)<br />
           <b>Hiking</b>: (Skitour, Hiking, Snow shoeing)<br />
           <b>Alpine Snow Sports</b>: (Ski, Snowboard)<br />
-          <b>Langlaufen / Inline</b>: (selbsterklärend)<br />
+          <b>Nordic Ski / Inline</b>: (Inline skating, Nordic skiing, etc.)<br />
           <b>Gym</b>: (Weighted Training, HIIT, Training)<br />
           <b>Ball Sports</b>: ( Volleyball, Football, Badminton, Pickleball, Tennis, Table Tennis, etc.)<br />
-          <b>Klettern</b>: (Bouldern, Klettern)<br />
+          <b>Climbing</b>: (Bouldering, Climbing)<br />
           <b>Water Sports</b>: (Canoe, Kayak, Kitesurf, Rowing, Stand Up Paddling, Surf, Swim, Windsurf)<br />
         </p>
 

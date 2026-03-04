@@ -4,20 +4,39 @@
     color: #ff6f61;
 }
 
+div.space {
+    width: 20px;
+}
+
 header {
+    /* border: 2px solid red; */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 20px;
-    background-color: #1b1b1b;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-height: clamp(4.5rem, 3.6vw, 50rem);
-    z-index: 10;
-    width: 100%;
-    overflow-x: auto; /* Enable horizontal scrolling if content overflows */
-    overflow-y: hidden; /* Prevent vertical scrollbars */
-    white-space: nowrap; /* Prevent wrapping of child elements */
-    min-height: 4.5rem;
+    background-color: white;
+    height: 100px;
+    width: 80vw;
+}
+
+header div.nav {
+    width: 25vw;
+    height: auto;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+h1 {
+    font-size: clamp(2rem, 8vw, 4rem); /* Responsive font size */
+    margin-bottom: clamp(20px, 5vw, 40px); /* Dynamic margin */
+    color: #5b5ea6;
+}
+
+hr#leaderboard-hr {
+    width: 1px;
+    height: 100%;
+    opacity: 0.1;
+    margin: 0 40px 0 50px;
 }
 
 div.loginBtn {

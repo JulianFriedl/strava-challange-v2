@@ -27,7 +27,7 @@ const Header = ({ authState, onLogout }) => {
         <HomeButton />
       </div>
 
-      <div>
+      <div class="nav">
         {/* Add other navigation links if needed */}
         <StyledLink to ="/">Ranking</StyledLink>
         <StyledLink to ="/analytics">Analytics</StyledLink>

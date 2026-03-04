@@ -1,0 +1,15 @@
+.title {
+    width: 100%;
+    padding: 50px 0;
+}
+
+#logo {
+    margin-bottom: -50px;
+    height: 150px;
+}
+
+#subhead {
+    margin-top: -50px;
+    /* color: #e0e0e0; */
+    color: #ff6f61;
+}

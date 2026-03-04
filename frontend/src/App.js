@@ -40,6 +40,8 @@ const AppContainer = styled.div`
   flex-direction: column;
   align-items: center;
   height: calc(var(--vh, 1vh) * 100);
+  width: 100vw;
+  height: 100vh;
 `;
 
 function App() {

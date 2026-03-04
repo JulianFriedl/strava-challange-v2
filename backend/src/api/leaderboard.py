@@ -14,9 +14,9 @@ def leaderboard():
     """
     Generate and return the total leaderboard as well as all sub-leaderboards.
     """
-    if not session.get("user_id"):
-        logger.info("Not logged in.")
-        return jsonify({"error": "unauthenticated"}), 401
+    # if not session.get("user_id"):
+    #     logger.info("Not logged in.")
+    #     return jsonify({"error": "unauthenticated"}), 401
 
     logger.info("Leaderboard request received.")
     try:

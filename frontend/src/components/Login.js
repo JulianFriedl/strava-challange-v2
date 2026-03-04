@@ -4,6 +4,7 @@ import websitePalette from '../styles/palette';
 import About from './About';
 import RankingTab from './ranking/Leaderboard.js';
 import { apiRequest } from '../api.js';
+import '../styles/login.css'
 
 const LandingPageContainer = styled.div`
   display: flex;
@@ -80,7 +81,11 @@ const Login = ({ authState }) => {
             } else {
               const hours = Math.floor(ranking.points / 60);
               const minutes = Math.round(ranking.points % 60);
-              points = `${hours}h ${minutes}m`;
+              if (hours === 0 && minutes === 0) {
+                points = "-";
+              } else {
+                points = `${hours}h ${minutes}m`;
+              }
             }
           
             return {
@@ -121,8 +126,12 @@ const Login = ({ authState }) => {
   if (!authState.loggedIn) {
     return (
       <LandingPageContainer>
-        <Title>Welcome to <span class="highlightText">challenge 2025!</span></Title>
-        <Description>Log in to explore your routes, stats, and more! But first, make sure to carefully read the rules.</Description>
+        <div class="title">
+          <img id="logo" src="/logo.svg" alt="Home" />
+          <Title class="head">Welcome to</Title> 
+          <Title id="subhead"><span class="secondaryText">challenge 2025!</span></Title>
+        </div>
+        {/* <Description>Log in to explore your routes, stats, and more! But first, make sure to carefully read the rules.</Description> */}
         <About />
       </LandingPageContainer>
     );
@@ -131,7 +140,7 @@ const Login = ({ authState }) => {
   // Render loading state while keeping the container and title visible
   return (
     <LoginContainer>
-      <Title>Leaderboards!</Title>
+      {/* <Title>Leaderboards!</Title> */}
       {isLoading && (
         <LoadingMessage>Loading leaderboard data...</LoadingMessage>
       )}

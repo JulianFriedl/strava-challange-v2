@@ -111,7 +111,7 @@ def get_full_leaderboard():
                 break
             sum += 10 - places[i]["rank"]
             sum_mov += places[i]["mov"]
-        total.append({"username": a.username, "name": a.first_name + " " + a.last_name, "points": sum, "mov": sum_mov})
+        total.append({"username": a.username, "name": a.first_name + " " + a.last_name, "url": a.profile, "points": sum, "mov": sum_mov})
 
     # sort overall leaderboard in search for a tie
     total = sort_overall_leaderboard(total)
